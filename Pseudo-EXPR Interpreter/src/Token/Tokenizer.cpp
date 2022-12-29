@@ -6,7 +6,7 @@ Tokenizer::Tokenizer(const std::string& srcCode)
 {
 }
 
-std::vector<Token> Tokenizer::tokenize()
+std::list<Token> Tokenizer::tokenize()
 {
     char currChar = peek();
     while (currChar != '\0')
@@ -17,7 +17,7 @@ std::vector<Token> Tokenizer::tokenize()
         if (isDigit(currChar))
         {
             int number = constructNumber();
-            addToken(TokenType::NUMBER, new unsigned long long(number));
+            addToken(TokenType::NUMBER, number);
             continue;
         }
 
@@ -36,7 +36,7 @@ std::vector<Token> Tokenizer::tokenize()
             else if (word == "while")   addToken(TokenType::WHILE);
             else if (word == "do")      addToken(TokenType::DO);
             else if (word == "done")    addToken(TokenType::DONE);
-            else                        addToken(TokenType::VARIABLE, new std::string(word));
+            else                        addToken(TokenType::IDENTIFIER, 0, word);
 
             continue;
         }
@@ -133,7 +133,7 @@ std::vector<Token> Tokenizer::tokenize()
     return m_Tokens;
 }
 
-std::vector<Token> Tokenizer::getTokens()
+std::list<Token> Tokenizer::getTokens()
 {
     if (m_Tokens.empty())
         return tokenize();
@@ -167,9 +167,9 @@ char Tokenizer::consume()
     return m_Src[m_Iterator++];
 }
 
-void Tokenizer::addToken(TokenType type, void* lit)
+void Tokenizer::addToken(TokenType type, unsigned long long lit, const std::string& name)
 {
-    m_Tokens.push_back(Token(type, lit, m_CurrLine));
+    m_Tokens.push_back(Token(type, m_CurrLine, lit, name));
 }
 
 std::string Tokenizer::constructWord()
