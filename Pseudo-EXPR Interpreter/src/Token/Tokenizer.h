@@ -6,19 +6,19 @@
 #include "TokenType.h"
 
 #include <string>
-#include <vector>
+#include <list>
 
 class Tokenizer
 {
 public:
 	Tokenizer(const std::string& srcCode);
 
-	std::vector<Token> tokenize();
-	std::vector<Token> getTokens();
+	std::list<Token> tokenize();
+	std::list<Token> getTokens();
 
 private:
 	std::string m_Src;
-	std::vector<Token> m_Tokens;
+	std::list<Token> m_Tokens;
 
 	size_t m_Iterator;
 	size_t m_CurrLine;
@@ -34,7 +34,7 @@ private:
 	// -------- Utility --------
 	std::string constructWord();
 	unsigned long long constructNumber();
-	void addToken(TokenType type, void* lit = nullptr);
+	void addToken(TokenType type, unsigned long long lit = 0, const std::string& name = "");
 
 	bool isDigit(char c) const;
 	bool isLetter(char c) const;

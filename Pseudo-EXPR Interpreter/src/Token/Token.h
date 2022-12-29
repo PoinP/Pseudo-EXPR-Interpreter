@@ -8,25 +8,18 @@
 class Token
 {
 public:
-	Token(TokenType type, void* liter, unsigned long long line);
-	Token(const Token& other);
-	Token(Token&& other) noexcept;
-	~Token();
-
-	Token& operator=(const Token& other);
-	Token& operator=(Token&& other) noexcept;
+	Token(TokenType type, unsigned long long line, unsigned long long literal, const std::string& identifier = "");
 
 	TokenType getType() const;
 	unsigned long long getLine() const;
-	void* getLiteral() const;
+	unsigned long long getLiteral() const;
+	const std::string& getIdentifier() const;
 
 private:
 	TokenType m_Type;
-	void* m_Literal;
 	unsigned long long m_Line;
-
-	void copy(const Token& other);
-	void move(Token&& other);
+	unsigned long long m_Literal;
+	std::string m_Identifier;
 };
 
 #endif // !TOKEN_H
