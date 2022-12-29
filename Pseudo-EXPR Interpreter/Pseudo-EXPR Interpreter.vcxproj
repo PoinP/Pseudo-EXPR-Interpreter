@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Parser\Environmnet.cpp" />
+    <ClCompile Include="src\Parser\Instructions\Instruction.h" />
     <ClCompile Include="src\Parser\Parser.cpp" />
     <ClCompile Include="src\Utility\BigInteger.cpp" />
     <ClCompile Include="src\Source.cpp" />
@@ -154,7 +156,11 @@
   <ItemGroup>
     <ClInclude Include="src\Exceptions\Error.h" />
     <ClInclude Include="src\Exceptions\RunTimeError.h" />
+    <ClInclude Include="src\Parser\Environmnet.h" />
     <ClInclude Include="src\Parser\Expressions\Binary.h" />
+    <ClInclude Include="src\Parser\Expressions\Variable.h" />
+    <ClInclude Include="src\Parser\Instructions\Assignment.h" />
+    <ClInclude Include="src\Parser\Instructions\Print.h" />
     <ClInclude Include="src\Parser\Parser.h" />
     <ClInclude Include="src\Parser\Expressions\Expression.h" />
     <ClInclude Include="src\Parser\Expressions\Grouping.h" />

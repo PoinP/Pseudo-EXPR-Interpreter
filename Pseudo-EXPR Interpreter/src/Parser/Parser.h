@@ -5,18 +5,22 @@
 #include <list>
 #include "../Token/Token.h"
 #include "Expressions/Expression.h"
+#include "Instructions/Instruction.h"
+#include "Environmnet.h"
+
 
 class Parser
 {
 public:
 	Parser(const std::list<Token>& tokens);
-	Expression* parse();
+	std::list<Instruction*> parse();
 
 	unsigned long long evaluate(Expression* expressions);
 
 private:
 	std::list<Token> m_Tokens;
 	std::list<Token>::iterator m_CurrToken;
+	Environment m_Environment;
 
 	Expression* expression();
 	Expression* equality();

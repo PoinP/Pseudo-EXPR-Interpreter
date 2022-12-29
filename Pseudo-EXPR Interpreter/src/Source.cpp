@@ -32,6 +32,8 @@
 #include "Parser/Expressions/Binary.h"
 #include <stdexcept>
 
+#include "Parser/Instructions/Instruction.h"
+
 
 #ifdef _DEBUG
 #define new new( _NORMAL_BLOCK , __FILE__ , __LINE__ )
@@ -63,7 +65,7 @@ int main()
 
 		unsigned int test = (265 + 76 * 9 + 8 / 12 + (12 - 2 - 3) * 10);
 
-		Expression* parsed = nullptr;
+		std::list<Instruction*> parsed;
 
 		try {
 			parsed = parser.parse();
@@ -73,8 +75,20 @@ int main()
 			std::cout << e.what();
 		}
 
-		if (parsed)
-			delete parsed;
+		for (auto p : parsed)
+		{
+			try
+			{
+				p->run();
+			}
+			catch (const std::exception& e)
+			{
+				std::cout << e.what();
+				return -1;
+			}
+
+			delete p;
+		}
 	}
 
 	_CrtDumpMemoryLeaks();
