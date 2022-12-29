@@ -1,0 +1,8 @@
+/*a = 1
+read b
+c = 3
+d[x]
+print a
+print b
+print c*/
+print d[c]

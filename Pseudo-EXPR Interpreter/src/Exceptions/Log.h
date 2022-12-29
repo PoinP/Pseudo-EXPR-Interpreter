@@ -12,6 +12,11 @@ public:
 	{
 		std::cout << "Syntax Error: " << what << " at line " << line << std::endl;
 	}
+
+	static void runtimeError(const char* what, unsigned long long line)
+	{
+		std::cout << "Run-Time Error: " << what << " at line " << line << std::endl;
+	}
 };
 
 #endif // !LOG_H
