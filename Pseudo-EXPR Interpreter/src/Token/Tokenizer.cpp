@@ -87,6 +87,7 @@ std::list<Token> Tokenizer::tokenize()
         case '-': addToken(TokenType::MINUS); break;
         case '*': addToken(TokenType::PROD); break;
         case '/': addToken(TokenType::DIV); break;
+        case '%': addToken(TokenType::MOD); break;
 
         case '[': addToken(TokenType::OPEN_BRACKET); break;
         case ']': addToken(TokenType::CLOSE_BRACKET); break;
