@@ -63,17 +63,18 @@ int main()
 
 		unsigned int test = (265 + 76 * 9 + 8 / 12 + (12 - 2 - 3) * 10);
 
-		Expression* parsed = parser.parse();
+		Expression* parsed = nullptr;
 
 		try {
-			std::cout << parsed->evaluate();
+			parsed = parser.parse();
 		}
 		catch (const std::exception& e)
 		{
 			std::cout << e.what();
 		}
 
-		delete parsed;
+		if (parsed)
+			delete parsed;
 	}
 
 	_CrtDumpMemoryLeaks();
