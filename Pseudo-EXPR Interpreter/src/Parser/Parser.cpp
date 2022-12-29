@@ -5,6 +5,8 @@
 #include "Expressions/Primitive.h"
 #include "Expressions/Unary.h"
 
+#include "../Exceptions/SyntaxError.h"
+
 Parser::Parser(const std::list<Token>& tokens)
 	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin())
 {
@@ -122,11 +124,15 @@ Expression* Parser::primitive()
 			next();
 			return new Grouping(expr);
 		}
+
+		log(SyntaxError("Expected a ')'", peek().getLine()).what());
+		return nullptr;
 	}
 
 	// Add variables;
 
-	throw("Error!");
+	log(SyntaxError("Expected an expression", peek().getLine()).what());
+	return nullptr;
 }
 
 void Parser::next()
@@ -141,14 +147,17 @@ const Token& Parser::consume()
 	return token;
 }
 
-const Token& Parser::peek()
+const Token& Parser::peek() const
 {
 	return *m_CurrToken;
 }
 
-const Token& Parser::peekNext()
+TokenType Parser::peekType() const
 {
-	const Token& next = *(++m_CurrToken);
-	m_CurrToken--;
-	return next;
+	return peek().getType();
+}
+
+void Parser::log(const char* msg) const
+{
+	std::cout << msg << std::endl;
 }

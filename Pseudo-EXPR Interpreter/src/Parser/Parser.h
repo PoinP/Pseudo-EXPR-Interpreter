@@ -29,8 +29,10 @@ private:
 	void next();
 	const Token& consume();
 
-	const Token& peek();
-	const Token& peekNext();
+	const Token& peek() const;
+	TokenType peekType() const;
+
+	void log(const char* msg) const;
 };
 
 #endif // !PARSER_H
