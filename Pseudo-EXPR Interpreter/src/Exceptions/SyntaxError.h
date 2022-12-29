@@ -2,12 +2,18 @@
 
 #define SYNTAX_ERROR_H
 
-#include <stdexcept>
+#include "Error.h"
 
-class SyntaxError : public std::exception
+class SyntaxError : public Error
 {
-	SyntaxError(const char* what, unsigned long long line);
-	SyntaxError(const std::string& what, unsigned long long line);
+public:
+	SyntaxError(const char* what, unsigned long long line)
+		: Error("Run-Time Error: " + std::string(what) + " at line " + std::to_string(line))
+	{}
+
+	SyntaxError(const std::string& what, unsigned long long line)
+		: SyntaxError(what.c_str(), line)
+	{}
 };
 
 #endif // !SYNTAX_ERROR_H
