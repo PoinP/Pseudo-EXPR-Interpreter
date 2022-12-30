@@ -12,7 +12,7 @@ public:
 		: m_Primitive(primitive)
 	{}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate() const override
 	{
 		return m_Primitive.getLiteral();
 	}

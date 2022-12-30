@@ -12,9 +12,7 @@ class Assignment : public Instruction
 public:
 	Assignment(const std::string& name, Expression* expr, Environment* env)
 		: m_Name(name), m_Expr(expr), m_Env(env)
-	{
-
-	}
+	{}
 
 	~Assignment()
 	{
@@ -24,14 +22,14 @@ public:
 	virtual void run() override
 	{
 		unsigned long long value = m_Expr->evaluate();
-		m_Env->operator[](m_Name) = value;
+		Token literal = Token(TokenType::NUMBER, 0, value);
+		m_Env->set(m_Name, new Primitive(literal));
 	}
 
 private:
 	std::string m_Name;
 	Expression* m_Expr;
 	Environment* m_Env;
-
 };
 
 #endif // !ASSIGNMENT_H

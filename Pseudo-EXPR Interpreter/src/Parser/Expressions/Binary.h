@@ -23,7 +23,7 @@ public:
 		delete m_Right;
 	}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate() const override
 	{
 		unsigned long long left = m_Left->evaluate();
 		unsigned long long right = m_Right->evaluate();

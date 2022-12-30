@@ -158,9 +158,13 @@
     <ClInclude Include="src\Exceptions\RunTimeError.h" />
     <ClInclude Include="src\Parser\Environmnet.h" />
     <ClInclude Include="src\Parser\Expressions\Binary.h" />
+    <ClInclude Include="src\Parser\Expressions\FunctionCaller.h" />
+    <ClInclude Include="src\Parser\Expressions\FunctionDecl.h" />
     <ClInclude Include="src\Parser\Expressions\Variable.h" />
     <ClInclude Include="src\Parser\Instructions\Assignment.h" />
+    <ClInclude Include="src\Parser\Instructions\Declaration.h" />
     <ClInclude Include="src\Parser\Instructions\Print.h" />
+    <ClInclude Include="src\Parser\Instructions\Read.h" />
     <ClInclude Include="src\Parser\Parser.h" />
     <ClInclude Include="src\Parser\Expressions\Expression.h" />
     <ClInclude Include="src\Parser\Expressions\Grouping.h" />

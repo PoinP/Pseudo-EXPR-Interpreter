@@ -44,7 +44,7 @@
 int main()
 {
 	{
-		const char* path = "test.txt";
+		const char* path = "test.expr";
 
 		std::ifstream input(path);
 

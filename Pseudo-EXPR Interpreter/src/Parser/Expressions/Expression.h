@@ -9,7 +9,7 @@ public:
 	{
 	}
 
-	virtual unsigned long long evaluate() = 0;
+	virtual unsigned long long evaluate() const = 0;
 };
 
 #endif // !EXPRESSION_H

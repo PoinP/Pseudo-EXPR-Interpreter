@@ -24,7 +24,7 @@
 //
 //	enum TokenType
 //	{
-//		EQUALS, PLUS, MINUS, PROD, DIV,
+//		EQUALS, PLUS, MINUS, PROD, DIV, MOD,
 //		EQUAL_EQUAL, NOT_EQUAL, NOT,
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
@@ -35,7 +35,7 @@
 //		OPEN_PAREN, CLOSE_PAREN,
 //		OPEN_BRACKET, CLOSE_BRACKET,
 //
-//		NUMBER, IDENTIFIER,
+//		NUMBER, VARIABLE, FUNCTION,
 //
 //		PRINT, READ,
 //
@@ -67,7 +67,7 @@
 //{
 //	enum TokenType
 //	{
-//		EQUALS, PLUS, MINUS, PROD, DIV,
+//		EQUALS, PLUS, MINUS, PROD, DIV, MOD,
 //		EQUAL_EQUAL, NOT_EQUAL, NOT,
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
@@ -78,29 +78,32 @@
 //		OPEN_PAREN, CLOSE_PAREN,
 //		OPEN_BRACKET, CLOSE_BRACKET,
 //
-//		NUMBER, IDENTIFIER,
+//		NUMBER, VARIABLE, FUNCTION,
 //
 //		PRINT, READ,
 //
 //		END_OF_FILE, END_OF_LINE
 //	};
 //
-//	std::string src = "= + - * / == != ! < > <= >= and or if then else while do done ( ) [ ] 1234 var print read\n";
+//	std::string src = "= + - * / == != ! < > <= >= and or if then else while do done ( ) [ ] 1234 var print read FUNC\n";
 //	Tokenizer scanner(src);
 //
 //	std::list<Token> tokens = scanner.tokenize();
 //	
 //	TokenType types[] = { EQUALS, PLUS, MINUS, PROD, DIV, EQUAL_EQUAL, NOT_EQUAL, NOT, LESS_THAN, GREATER_THAN, 
 //		LESS_EQUAL, GREATER_EQUAL, AND, OR, IF, THEN, ELSE, WHILE, DO, DONE, OPEN_PAREN, CLOSE_PAREN, 
-//		OPEN_BRACKET, CLOSE_BRACKET, NUMBER, IDENTIFIER, PRINT, READ, END_OF_LINE, END_OF_FILE };
+//		OPEN_BRACKET, CLOSE_BRACKET, NUMBER, VARIABLE, PRINT, READ, FUNCTION, END_OF_LINE, END_OF_FILE };
 //
 //	int iter = 0;
 //	for (Token token : tokens)
 //	{
 //		CHECK((int)token.getType() == types[iter]);
 //
-//		if (types[iter] == IDENTIFIER)
+//		if (types[iter] == VARIABLE)
 //			CHECK(token.getIdentifier() == "var");
+//
+//		if (types[iter] == FUNCTION)
+//			CHECK(token.getIdentifier() == "FUNC");
 //
 //		if (types[iter] == NUMBER)
 //			CHECK(token.getLiteral() == 1234);
@@ -123,7 +126,7 @@
 //
 //	enum TokenType
 //	{
-//		EQUALS, PLUS, MINUS, PROD, DIV,
+//		EQUALS, PLUS, MINUS, PROD, DIV, MOD,
 //		EQUAL_EQUAL, NOT_EQUAL, NOT,
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
@@ -134,15 +137,15 @@
 //		OPEN_PAREN, CLOSE_PAREN,
 //		OPEN_BRACKET, CLOSE_BRACKET,
 //
-//		NUMBER, IDENTIFIER,
+//		NUMBER, VARIABLE, FUNCTION,
 //
 //		PRINT, READ,
 //
 //		END_OF_FILE, END_OF_LINE
 //	};
 //
-//	TokenType expectedTypes[] = { TokenType::END_OF_LINE, TokenType::IDENTIFIER, TokenType::EQUALS, TokenType::NUMBER, 
-//		TokenType::PLUS, TokenType::NUMBER,TokenType::END_OF_LINE, TokenType::IDENTIFIER, TokenType::EQUALS, TokenType::NUMBER, 
+//	TokenType expectedTypes[] = { TokenType::END_OF_LINE, TokenType::VARIABLE, TokenType::EQUALS, TokenType::NUMBER, 
+//		TokenType::PLUS, TokenType::NUMBER,TokenType::END_OF_LINE, TokenType::VARIABLE, TokenType::EQUALS, TokenType::NUMBER, 
 //		TokenType::END_OF_FILE };
 //
 //	int iter = 0;

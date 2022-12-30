@@ -22,6 +22,14 @@ private:
 	std::list<Token>::iterator m_CurrToken;
 	Environment m_Environment;
 
+	// -------- Instruction Handling -------- //
+	Instruction* variable();
+	Instruction* function();
+	Instruction* print();
+	Instruction* read();
+	Instruction* eol();
+
+	// -------- Expression Handling -------- //
 	Expression* expression();
 	Expression* equality();
 	Expression* comparison();

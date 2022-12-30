@@ -19,12 +19,12 @@ private:
 	Token m_Var;
 	const Environment* m_Env;
 
-	virtual unsigned long long evaluate() override
+	virtual unsigned long long evaluate() const override
 	{
 		std::string varName = m_Var.getIdentifier();
 
 		if (m_Env->contains(varName))
-			return m_Env->get(varName);
+			return m_Env->get(varName)->evaluate();
 
 		throw RunTimeError("The variable \"" + varName + "\" is not initalized", m_Var.getLine());
 	}

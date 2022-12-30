@@ -101,5 +101,17 @@
     <ClInclude Include="src\Parser\Instructions\Assignment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Parser\Instructions\Read.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parser\Expressions\FunctionDecl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parser\Expressions\FunctionCaller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Parser\Instructions\Declaration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

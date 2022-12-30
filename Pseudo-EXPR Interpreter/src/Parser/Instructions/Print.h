@@ -3,6 +3,8 @@
 #define PRINT_H
 
 #include "Instruction.h"
+#include "../Expressions/Expression.h"
+#include <iostream>
 
 class Print : public Instruction
 {

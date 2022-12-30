@@ -6,15 +6,12 @@ Environment::Environment()
 {
 }
 
-void Environment::add(const std::string& key, unsigned long long value)
+Environment::~Environment()
 {
-    if (!contains(key))
+    for (std::pair<std::string, Expression*> ex : m_Table)
     {
-        add(key, value);
-        return;
+        delete ex.second;
     }
-
-    assert("This variable already exists!");
 }
 
 bool Environment::contains(const std::string& key) const
@@ -22,17 +19,15 @@ bool Environment::contains(const std::string& key) const
     return m_Table.find(key) != m_Table.end();
 }
 
-unsigned long long Environment::get(const std::string& key) const
+const Expression* Environment::get(const std::string& key) const
 {
     return m_Table.at(key);
 }
 
-unsigned long long& Environment::operator[](const std::string& key)
+void Environment::set(const std::string& key, Expression* expr)
 {
-    return m_Table[key];
-}
+    if (contains(key))
+        delete m_Table[key];
 
-unsigned long long Environment::operator[](const std::string& key) const
-{
-    return get(key);
+    m_Table[key] = expr;
 }

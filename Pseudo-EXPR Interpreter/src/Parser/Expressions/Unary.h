@@ -18,7 +18,7 @@ public:
 		delete m_Right;
 	}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate() const override
 	{
 		unsigned long long exprValue = m_Right->evaluate();
 		TokenType type = m_Operator.getType();

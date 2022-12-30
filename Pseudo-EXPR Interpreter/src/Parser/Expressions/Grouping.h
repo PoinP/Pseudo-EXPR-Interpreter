@@ -17,7 +17,7 @@ public:
 		delete m_Expr;
 	}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate() const override
 	{
 		return m_Expr->evaluate();
 	}
