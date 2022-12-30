@@ -11,8 +11,11 @@ public:
 	Primitive(const Token& primitive)
 		: m_Primitive(primitive)
 	{}
+	Primitive(unsigned long long value)
+		: m_Primitive(Token(TokenType::NUMBER, 0, value))
+	{}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate(Environment* env) const override
 	{
 		return m_Primitive.getLiteral();
 	}

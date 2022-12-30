@@ -33,6 +33,7 @@
 #include <stdexcept>
 
 #include "Parser/Instructions/Instruction.h"
+#include "Parser/Expressions/Primitive.h"
 
 
 #ifdef _DEBUG
@@ -44,7 +45,7 @@
 int main()
 {
 	{
-		const char* path = "test.txt";
+		const char* path = "test.expr";
 
 		std::ifstream input(path);
 

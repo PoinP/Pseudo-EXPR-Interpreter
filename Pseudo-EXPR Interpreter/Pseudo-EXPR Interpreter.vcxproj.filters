@@ -32,5 +32,9 @@
     <ClInclude Include="src\Token\Tokenizer.h" />
     <ClInclude Include="tests\doctest.h" />
     <ClInclude Include="src\Parser\Instructions\Read.h" />
+    <ClInclude Include="src\Parser\Expressions\FunctionCaller.h" />
+    <ClInclude Include="src\Parser\Expressions\FunctionDeclaration.h" />
+    <ClInclude Include="src\Parser\Instructions\Declaration.h" />
+    <ClInclude Include="src\Utility\Common.h" />
   </ItemGroup>
 </Project>

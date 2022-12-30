@@ -24,6 +24,7 @@ private:
 
 	// -------- Instruction Handling -------- //
 	Instruction* variable();
+	Instruction* function();
 	Instruction* print();
 	Instruction* read();
 	Instruction* eol();

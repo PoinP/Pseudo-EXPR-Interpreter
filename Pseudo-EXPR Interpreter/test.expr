@@ -1,0 +1,22 @@
+a = 1
+read b
+c = 3
+D[x] = a + 2*b%x
+print a
+print b
+print c
+print D[c]
+
+
+/*number = 10
+read factor
+
+print number * factor
+read factor
+print (number * 100 + factor) * 258*/
+
+
+/*print 123 + 8
+print (9 * 10) + 10 * 10
+print 12*10
+print 76 + 2 == 0*/

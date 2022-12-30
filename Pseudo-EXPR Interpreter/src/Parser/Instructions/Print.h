@@ -7,8 +7,8 @@
 class Print : public Instruction
 {
 public:
-	Print(Expression* expr)
-		: m_Expr(expr)
+	Print(Expression* expr, Environment* env)
+		: m_Expr(expr), m_Env(env)
 	{}
 
 	~Print()
@@ -18,11 +18,12 @@ public:
 
 	void run() override
 	{
-		std::cout << m_Expr->evaluate() << std::endl;
+		std::cout << m_Expr->evaluate(m_Env) << std::endl;
 	}
 
 private:
 	Expression* m_Expr;
+	Environment* m_Env;
 };
 
 #endif // !PRINT_INSTRUCTION_H

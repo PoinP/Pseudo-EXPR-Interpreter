@@ -13,9 +13,7 @@ class Binary : public Expression
 public:
 	Binary(Expression* left, const Token& op, Expression* right)
 		: m_Left(left), m_Operator(op), m_Right(right)
-	{
-
-	}
+	{}
 
 	~Binary()
 	{
@@ -23,10 +21,10 @@ public:
 		delete m_Right;
 	}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate(Environment* env) const override
 	{
-		unsigned long long left = m_Left->evaluate();
-		unsigned long long right = m_Right->evaluate();
+		unsigned long long left = m_Left->evaluate(env);
+		unsigned long long right = m_Right->evaluate(env);
 
 		TokenType type = m_Operator.getType();
 

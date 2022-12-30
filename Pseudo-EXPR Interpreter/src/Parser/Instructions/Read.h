@@ -19,7 +19,9 @@ public:
 
 	void run() override
 	{
-		std::cin >> m_Env->operator[](m_Var->getIdentifier());
+		unsigned long long value;
+		std::cin >> value;
+		m_Env->set(m_Var->getIdentifier(), new Primitive(value));
 	}
 
 private:

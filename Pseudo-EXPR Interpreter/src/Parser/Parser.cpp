@@ -5,12 +5,14 @@
 #include "Expressions/Primitive.h"
 #include "Expressions/Unary.h"
 #include "Expressions/Variable.h"
+#include "Expressions/FunctionCaller.h"
 
 #include "../Exceptions/SyntaxError.h"
 #include "Instructions/Instruction.h"
 #include "Instructions/Print.h"
 #include "Instructions/Assignment.h"
 #include "Instructions/Read.h"
+#include "Instructions/Declaration.h"
 
 Parser::Parser(const std::list<Token>& tokens)
 	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin())
@@ -26,6 +28,7 @@ std::list<Instruction*> Parser::parse()
 		switch (peekType())
 		{
 		case TokenType::VARIABLE: instructions.push_back(variable()); break;
+		case TokenType::FUNCTION: instructions.push_back(function()); break;
 		case TokenType::PRINT:    instructions.push_back(print());    break;
 		case TokenType::READ:     instructions.push_back(read());     break;
 
@@ -56,12 +59,45 @@ Instruction* Parser::variable()
 	return assignmentInstr;
 }
 
+Instruction* Parser::function()
+{
+	Instruction* declInstr = nullptr;
+	Token funcToken = consume();
+
+	if (peekType() != TokenType::OPEN_BRACKET)
+		throw SyntaxError("Expected a parameter after function declaration", peek().getLine());
+
+	next();
+
+	if (peekType() == TokenType::CLOSE_BRACKET)
+		throw SyntaxError("0 parameters are not supported", peek().getLine());
+
+	if (peekType() != TokenType::VARIABLE)
+		throw SyntaxError("Fuction parameter expected", peek().getLine());
+
+	Token paramToken = consume();
+
+	if (peekType() != TokenType::CLOSE_BRACKET)
+		throw SyntaxError("Expected a ']' with single parameter", peek().getLine());
+
+	next();
+
+	if (peekType() != TokenType::EQUALS)
+		throw SyntaxError("Invalid function declaration", peek().getLine());
+
+	next();
+
+	declInstr = new Declaration(funcToken, paramToken, expression(), &m_Environment);
+
+	return declInstr;
+}
+
 Instruction* Parser::print()
 {
 	Instruction* printInstr = nullptr;
 
 	next();
-	printInstr = new Print(expression());
+	printInstr = new Print(expression(), &m_Environment);
 
 	if (peekType() != TokenType::END_OF_LINE)
 		throw SyntaxError("Expected one statement per row only!", peek().getLine());
@@ -90,11 +126,6 @@ Instruction* Parser::eol()
 {
 	next();
 	return nullptr;
-}
-
-unsigned long long Parser::evaluate(Expression* expressions)
-{
-	return expressions->evaluate();
 }
 
 Expression* Parser::expression()
@@ -192,7 +223,17 @@ Expression* Parser::primitive()
 		return new Primitive(consume());
 
 	if (peekType() == TokenType::VARIABLE)
-		return new Variable(consume(), &m_Environment);
+		return new Variable(consume());
+
+	if (peekType() == TokenType::FUNCTION)
+	{
+		Token name = consume();
+		next();
+		Expression* expr = expression();
+		next();
+
+		return new FunctionCaller(name, expr);
+	}
 
 	if (peekType() == TokenType::OPEN_PAREN)
 	{

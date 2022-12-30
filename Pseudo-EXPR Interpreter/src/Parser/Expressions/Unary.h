@@ -18,9 +18,9 @@ public:
 		delete m_Right;
 	}
 
-	unsigned long long evaluate() override
+	unsigned long long evaluate(Environment* env) const override
 	{
-		unsigned long long exprValue = m_Right->evaluate();
+		unsigned long long exprValue = m_Right->evaluate(env);
 		TokenType type = m_Operator.getType();
 
 		switch (type)

@@ -1,38 +1,59 @@
 #include "Environmnet.h"
 
+#include "../Utility/Common.h"
 #include <cassert>
 
 Environment::Environment()
+    : m_PrevEnv(nullptr)
+{}
+
+Environment::Environment(Environment* prevEnv)
+    : m_PrevEnv(prevEnv)
+{}
+
+Environment::~Environment()
 {
+    for (std::pair<std::string, Expression*> entry : m_Table)
+    {
+        delete entry.second;
+    }
 }
 
-void Environment::add(const std::string& key, unsigned long long value)
-{
-    if (!contains(key))
+void Environment::set(const std::string & key, Expression* expr)
+{   
+    if (m_Table.find(key) != m_Table.end())
     {
-        add(key, value);
+        delete m_Table[key];
+        m_Table[key] = expr;
         return;
     }
 
-    assert("This variable already exists!");
+    if (!contains(key))
+    {
+        m_Table[key] = expr;
+        return;
+    }
+
+    if (m_PrevEnv)
+        m_PrevEnv->set(key, expr);
 }
 
-bool Environment::contains(const std::string& key) const
-{
-    return m_Table.find(key) != m_Table.end();
-}
+bool Environment::contains(const std::string& key) const 
+{ 
+    if (m_Table.find(key) == m_Table.end())
+    {
+        if (m_PrevEnv) 
+            return m_PrevEnv->contains(key);
 
-unsigned long long Environment::get(const std::string& key) const
-{
-    return m_Table.at(key);
-}
+        return false;
+    }
 
-unsigned long long& Environment::operator[](const std::string& key)
-{
-    return m_Table[key];
+    return true;
 }
+const Expression* Environment::get(const std::string& key) const 
+{ 
+    if (m_Table.find(key) == m_Table.end())
+        return m_PrevEnv->get(key);
 
-unsigned long long Environment::operator[](const std::string& key) const
-{
-    return get(key);
+    return m_Table.at(key); 
 }
