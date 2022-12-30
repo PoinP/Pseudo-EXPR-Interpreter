@@ -1,105 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="src\Parser\Environmnet.cpp" />
+    <ClCompile Include="src\Parser\Instructions\Instruction.h" />
+    <ClCompile Include="src\Parser\Parser.cpp" />
+    <ClCompile Include="src\Utility\BigInteger.cpp" />
+    <ClCompile Include="src\Source.cpp" />
+    <ClCompile Include="src\Token\Token.cpp" />
+    <ClCompile Include="src\Token\Tokenizer.cpp" />
+    <ClCompile Include="tests\Tester.cpp" />
+    <ClCompile Include="tests\TokenizerTests.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Token\Tokenizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Token\Token.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utility\BigInteger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\TokenizerTests.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\Tester.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Parser\Parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Parser\Instructions\Instruction.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Parser\Environmnet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Token\Tokenizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Token\TokenType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Token\Token.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exceptions\SyntaxError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exceptions\Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utility\BigInteger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tests\doctest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Expression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Unary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Grouping.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Primitive.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Binary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exceptions\RunTimeError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exceptions\Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Instructions\Print.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Expressions\Variable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Environmnet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Parser\Instructions\Assignment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Exceptions\Error.h" />
+    <ClInclude Include="src\Exceptions\RunTimeError.h" />
+    <ClInclude Include="src\Parser\Environmnet.h" />
+    <ClInclude Include="src\Parser\Expressions\Binary.h" />
+    <ClInclude Include="src\Parser\Expressions\Variable.h" />
+    <ClInclude Include="src\Parser\Instructions\Assignment.h" />
+    <ClInclude Include="src\Parser\Instructions\Print.h" />
+    <ClInclude Include="src\Parser\Parser.h" />
+    <ClInclude Include="src\Parser\Expressions\Expression.h" />
+    <ClInclude Include="src\Parser\Expressions\Grouping.h" />
+    <ClInclude Include="src\Parser\Expressions\Primitive.h" />
+    <ClInclude Include="src\Parser\Expressions\Unary.h" />
+    <ClInclude Include="src\Utility\BigInteger.h" />
+    <ClInclude Include="src\Exceptions\Log.h" />
+    <ClInclude Include="src\Exceptions\SyntaxError.h" />
+    <ClInclude Include="src\Token\Token.h" />
+    <ClInclude Include="src\Token\TokenType.h" />
+    <ClInclude Include="src\Token\Tokenizer.h" />
+    <ClInclude Include="tests\doctest.h" />
+    <ClInclude Include="src\Parser\Instructions\Read.h" />
   </ItemGroup>
 </Project>

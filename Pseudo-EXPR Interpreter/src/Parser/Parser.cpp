@@ -10,6 +10,7 @@
 #include "Instructions/Instruction.h"
 #include "Instructions/Print.h"
 #include "Instructions/Assignment.h"
+#include "Instructions/Read.h"
 
 Parser::Parser(const std::list<Token>& tokens)
 	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin())
@@ -22,35 +23,73 @@ std::list<Instruction*> Parser::parse()
 
 	while (peekType() != TokenType::END_OF_FILE)
 	{
-		if (peekType() == TokenType::END_OF_LINE)
+		switch (peekType())
 		{
-			next();
-			continue;
+		case TokenType::VARIABLE: instructions.push_back(variable()); break;
+		case TokenType::PRINT:    instructions.push_back(print());    break;
+		case TokenType::READ:     instructions.push_back(read());     break;
+
+		case TokenType::END_OF_LINE:		             eol();	      break;
+
+		default:	throw SyntaxError("Expected a declaration", peek().getLine());
 		}
 
-		if (peekType() == TokenType::IDENTIFIER)
-		{
-			std::string varName = consume().getIdentifier();
-			if (peekType() == TokenType::EQUALS)
-			{
-				next();
-				instructions.push_back(new Assignment(varName, expression(), &m_Environment));
-				continue;
-			}
-			continue;
-		}
-
-		if (peekType() == TokenType::PRINT)
-		{
-			next();
-			instructions.push_back(new Print(expression()));
-			continue;
-		}
-
-		throw SyntaxError("Expected a declaration", peek().getLine());
 	}
 
 	return instructions;
+}
+
+Instruction* Parser::variable()
+{
+	Instruction* assignmentInstr = nullptr;
+	std::string varName = consume().getIdentifier();
+
+	if (peekType() == TokenType::EQUALS)
+	{
+		next();
+		assignmentInstr = new Assignment(varName, expression(), &m_Environment);
+	}
+
+	if (peekType() != TokenType::END_OF_LINE)
+		throw SyntaxError("Expected one statement per row only!", peek().getLine());
+
+	return assignmentInstr;
+}
+
+Instruction* Parser::print()
+{
+	Instruction* printInstr = nullptr;
+
+	next();
+	printInstr = new Print(expression());
+
+	if (peekType() != TokenType::END_OF_LINE)
+		throw SyntaxError("Expected one statement per row only!", peek().getLine());
+
+	return printInstr;
+}
+
+Instruction* Parser::read()
+{
+
+	Instruction* readInstr = nullptr;
+	next();
+
+	if (peekType() != TokenType::VARIABLE)
+		throw SyntaxError("Can not apply value to a non variable token!", peek().getLine());
+
+	readInstr = new Read(&consume(), &m_Environment);
+
+	if (peekType() != TokenType::END_OF_LINE)
+		throw SyntaxError("Expected one statement per row only!", peek().getLine());
+
+	return readInstr;
+}
+
+Instruction* Parser::eol()
+{
+	next();
+	return nullptr;
 }
 
 unsigned long long Parser::evaluate(Expression* expressions)
@@ -121,7 +160,7 @@ Expression* Parser::factor()
 
 	TokenType type = peekType();
 
-	while (type == TokenType::PROD || type == TokenType::DIV)
+	while (type == TokenType::PROD || type == TokenType::DIV || type == TokenType::MOD)
 	{
 		Token op = consume();
 		Expression* right = unary();
@@ -152,7 +191,7 @@ Expression* Parser::primitive()
 	if (peekType() == TokenType::NUMBER)
 		return new Primitive(consume());
 
-	if (peekType() == TokenType::IDENTIFIER)
+	if (peekType() == TokenType::VARIABLE)
 		return new Variable(consume(), &m_Environment);
 
 	if (peekType() == TokenType::OPEN_PAREN)

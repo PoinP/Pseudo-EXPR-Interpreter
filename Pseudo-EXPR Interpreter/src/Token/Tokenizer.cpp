@@ -1,5 +1,6 @@
 #include "Tokenizer.h"
-#include "../Exceptions/Log.h"
+#include "../Exceptions/SyntaxError.h"
+#include <iostream>
 
 Tokenizer::Tokenizer(const std::string& srcCode)
     : m_Src(srcCode), m_Iterator(0), m_CurrLine(1)
@@ -36,11 +37,11 @@ std::list<Token> Tokenizer::tokenize()
             else if (word == "while")   addToken(TokenType::WHILE);
             else if (word == "do")      addToken(TokenType::DO);
             else if (word == "done")    addToken(TokenType::DONE);
-            else                        addToken(TokenType::IDENTIFIER, 0, word);
+            else                        addWord(word);
 
             continue;
         }
-        
+
         // Handles Comments
         if (currChar == '/')
         {
@@ -53,7 +54,7 @@ std::list<Token> Tokenizer::tokenize()
 
                 continue;
             }
-            
+
             if (peekNext() == '*')
             {
                 // Continues while it meets a '*/' or ends the source code
@@ -80,7 +81,7 @@ std::list<Token> Tokenizer::tokenize()
         case ' ':
         case '\t':
         case '\r':
-        case '\0': 
+        case '\0':
             break;
 
         case '+': addToken(TokenType::PLUS); break;
@@ -111,7 +112,7 @@ std::list<Token> Tokenizer::tokenize()
             type = peek() == '=' ? TokenType::GREATER_EQUAL : TokenType::GREATER_THAN;
             addToken(type);
             break;
-            
+
         case '<':
             if (peekNext() == '=') next();
             type = peek() == '=' ? TokenType::LESS_EQUAL : TokenType::LESS_THAN;
@@ -123,7 +124,8 @@ std::list<Token> Tokenizer::tokenize()
             m_CurrLine++;
             break;
         default:
-            Log::syntaxError("Invalid or unexpected token", m_CurrLine);
+            // TODO FIX
+            std::cout << SyntaxError("Invalid or unexpected token", m_CurrLine).what();
         }
 
         next();
@@ -208,5 +210,56 @@ bool Tokenizer::isDigit(char c) const
 
 bool Tokenizer::isLetter(char c) const
 {
-    return c >= 'a' && c <= 'z';
+    return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+}
+
+bool Tokenizer::isUppercase(char c) const
+{
+    return c >= 'A' && c <= 'Z';
+}
+
+bool Tokenizer::onlyUppercase(const std::string& word) const
+{
+    for (int i = 0; i < word.length(); i++)
+    {
+        if (!isUppercase(word[i]))
+            return false;
+    }
+
+    return true;
+}
+
+bool Tokenizer::onlyLowercase(const std::string& word) const
+{
+    for (int i = 0; i < word.length(); i++)
+    {
+        if (isUppercase(word[i]))
+            return false;
+    }
+
+    return true;
+}
+
+void Tokenizer::addWord(const std::string& word)
+{
+    if (isUppercase(word.front()))
+    {
+        if (onlyUppercase(word))
+        {
+            addToken(TokenType::FUNCTION, 0, word);
+            return;
+        }
+
+        std::cout << SyntaxError("Invalid function name!", m_CurrLine).what() << std::endl;
+    }
+    else
+    {
+        if (onlyLowercase(word))
+        {
+            addToken(TokenType::VARIABLE, 0, word);
+            return;
+        }
+
+        std::cout << SyntaxError("Invalid variable name!", m_CurrLine).what() << std::endl;
+    }
 }

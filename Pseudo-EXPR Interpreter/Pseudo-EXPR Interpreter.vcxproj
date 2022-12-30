@@ -161,6 +161,7 @@
     <ClInclude Include="src\Parser\Expressions\Variable.h" />
     <ClInclude Include="src\Parser\Instructions\Assignment.h" />
     <ClInclude Include="src\Parser\Instructions\Print.h" />
+    <ClInclude Include="src\Parser\Instructions\Read.h" />
     <ClInclude Include="src\Parser\Parser.h" />
     <ClInclude Include="src\Parser\Expressions\Expression.h" />
     <ClInclude Include="src\Parser\Expressions\Grouping.h" />

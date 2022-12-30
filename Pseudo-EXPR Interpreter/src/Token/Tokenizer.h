@@ -38,6 +38,11 @@ private:
 
 	bool isDigit(char c) const;
 	bool isLetter(char c) const;
+	bool isUppercase(char c) const;
+	bool onlyUppercase(const std::string& word) const;
+	bool onlyLowercase(const std::string& word) const;
+
+	void addWord(const std::string& word);
 };
 
 #endif // !TOKENIZER_H
