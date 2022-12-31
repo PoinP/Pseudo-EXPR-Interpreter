@@ -1,11 +1,14 @@
-a = 1
-read b
-c = 3
-D[x] = a + 2*b%x
-print a
-print b
-print c
-print D[c]
+D[x] = x != 0 ? 2 + D[x - 1] : 0
+
+print D[1000]
+
+
+/*a = 2
+b = 10
+aresame = a == b or a < b
+arediff = a != b
+
+print aresame and arediff*/
 
 
 /*number = 10

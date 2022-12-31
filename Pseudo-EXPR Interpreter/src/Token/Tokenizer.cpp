@@ -95,6 +95,9 @@ std::list<Token> Tokenizer::tokenize()
         case '(': addToken(TokenType::OPEN_PAREN); break;
         case ')': addToken(TokenType::CLOSE_PAREN); break;
 
+        case '?': addToken(TokenType::QUESTION); break;
+        case ':': addToken(TokenType::COLON); break;
+
         case '=':
             type = peekNext() == '=' ? TokenType::EQUAL_EQUAL : TokenType::EQUALS;
             if (peekNext() == '=') next();
