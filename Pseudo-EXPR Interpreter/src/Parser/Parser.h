@@ -27,7 +27,7 @@ private:
 	Instruction* function();
 	Instruction* print();
 	Instruction* read();
-	Instruction* eol();
+	void eol();
 
 	// -------- Expression Handling -------- //
 	Expression* expression();
@@ -40,9 +40,13 @@ private:
 
 	void next();
 	const Token& consume();
+	TokenType consumeType();
+
+	void skipLine();
 
 	const Token& peek() const;
 	TokenType peekType() const;
+	unsigned long long peekLine() const;
 
 	void log(const char* msg) const;
 };
