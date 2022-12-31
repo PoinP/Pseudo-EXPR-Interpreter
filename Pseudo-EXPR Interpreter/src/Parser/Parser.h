@@ -31,6 +31,8 @@ private:
 
 	// -------- Expression Handling -------- //
 	Expression* expression();
+	Expression* ternary();
+	Expression* logical();
 	Expression* equality();
 	Expression* comparison();
 	Expression* arithmetic();

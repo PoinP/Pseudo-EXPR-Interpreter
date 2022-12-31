@@ -59,6 +59,11 @@ public:
 		case TokenType::EQUAL_EQUAL: return left == right;
 		case TokenType::NOT_EQUAL: return left != right;
 
+		// ---------- Logical ----------
+
+		case TokenType::AND: return left && right;
+		case TokenType::OR: return left || right;
+
 		default: throw RunTimeError("Unexpected behavior", currLine());
 		}
 	}

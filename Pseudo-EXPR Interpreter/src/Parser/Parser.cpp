@@ -6,6 +6,7 @@
 #include "Expressions/Unary.h"
 #include "Expressions/Variable.h"
 #include "Expressions/FunctionCaller.h"
+#include "Expressions/Ternary.h"
 
 #include "../Exceptions/SyntaxError.h"
 #include "Instructions/Instruction.h"
@@ -59,13 +60,18 @@ Instruction* Parser::variable()
 	Instruction* assignmentInstr = nullptr;
 	std::string varName = consume().getIdentifier();
 
-	if (consumeType() == TokenType::EQUALS)
+	if (peekType() == TokenType::EQUALS)
+	{
+		next();
 		assignmentInstr = new Assignment(varName, expression(), &m_Environment);
 
-	if (consumeType() != TokenType::END_OF_LINE)
-		throw SyntaxError("Expected one statement per row only!", peekLine());
+		if (consumeType() != TokenType::END_OF_LINE)
+			throw SyntaxError("Expected one statement per row only!", peekLine());
 
-	return assignmentInstr;
+		return assignmentInstr;
+	}
+			
+	throw SyntaxError("Expected variable initalization!", peekLine());
 }
 
 Instruction* Parser::function()
@@ -121,7 +127,7 @@ Instruction* Parser::read()
 	readInstr = new Read(&consume(), &m_Environment);
 
 	if (peekType() != TokenType::END_OF_LINE)
-		throw SyntaxError("Expected one statement per row only!", peekLine());
+		throw SyntaxError("Expected one statement per row only", peekLine());
 
 	return readInstr;
 }
@@ -133,7 +139,47 @@ void Parser::eol()
 
 Expression* Parser::expression()
 {
-	return equality();
+	return ternary();
+}
+
+Expression* Parser::ternary()
+{
+	Expression* left = logical();
+
+	TokenType type = peekType();
+
+	if (type == TokenType::QUESTION)
+	{
+		next();
+		
+		Expression* ifTrue = expression();
+
+		if (consumeType() != TokenType::COLON)
+			throw SyntaxError("Expected ':'", peekLine());
+
+		Expression* ifFalse = expression();
+
+		left = new Ternary(left, ifTrue, ifFalse);
+	}
+
+	return left;
+}
+
+Expression* Parser::logical()
+{
+	Expression* left = equality();
+
+	TokenType type = peekType();
+
+	while (type == TokenType::AND || type == TokenType::OR)
+	{
+		Token op = consume();
+		Expression* right = equality();
+		type = peekType();
+		left = new Binary(left, op, right);
+	}
+
+	return left;
 }
 
 Expression* Parser::equality()

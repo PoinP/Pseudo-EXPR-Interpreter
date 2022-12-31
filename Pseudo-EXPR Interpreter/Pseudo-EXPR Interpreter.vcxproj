@@ -160,6 +160,7 @@
     <ClInclude Include="src\Parser\Expressions\Binary.h" />
     <ClInclude Include="src\Parser\Expressions\FunctionCaller.h" />
     <ClInclude Include="src\Parser\Expressions\FunctionDeclaration.h" />
+    <ClInclude Include="src\Parser\Expressions\Ternary.h" />
     <ClInclude Include="src\Parser\Expressions\Variable.h" />
     <ClInclude Include="src\Parser\Instructions\Assignment.h" />
     <ClInclude Include="src\Parser\Instructions\Declaration.h" />
