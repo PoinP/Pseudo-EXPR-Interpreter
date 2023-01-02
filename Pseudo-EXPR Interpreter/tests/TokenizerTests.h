@@ -29,6 +29,8 @@
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
 //		AND, OR,
+//
+//		QUESTION, COLON,
 //		IF, THEN, ELSE,
 //		WHILE, DO, DONE,
 //
@@ -72,6 +74,8 @@
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
 //		AND, OR,
+//
+//		QUESTION, COLON,
 //		IF, THEN, ELSE,
 //		WHILE, DO, DONE,
 //
@@ -85,13 +89,13 @@
 //		END_OF_FILE, END_OF_LINE
 //	};
 //
-//	std::string src = "= + - * / == != ! < > <= >= and or if then else while do done ( ) [ ] 1234 var print read FUNC\n";
+//	std::string src = "= + - * / == != ! < > <= >= and or ? : if then else while do done ( ) [ ] 1234 var print read FUNC\n";
 //	Tokenizer scanner(src);
 //
 //	std::list<Token> tokens = scanner.tokenize();
 //	
 //	TokenType types[] = { EQUALS, PLUS, MINUS, PROD, DIV, EQUAL_EQUAL, NOT_EQUAL, NOT, LESS_THAN, GREATER_THAN, 
-//		LESS_EQUAL, GREATER_EQUAL, AND, OR, IF, THEN, ELSE, WHILE, DO, DONE, OPEN_PAREN, CLOSE_PAREN, 
+//		LESS_EQUAL, GREATER_EQUAL, AND, OR, QUESTION, COLON, IF, THEN, ELSE, WHILE, DO, DONE, OPEN_PAREN, CLOSE_PAREN,
 //		OPEN_BRACKET, CLOSE_BRACKET, NUMBER, VARIABLE, PRINT, READ, FUNCTION, END_OF_LINE, END_OF_FILE };
 //
 //	int iter = 0;
@@ -131,6 +135,8 @@
 //		LESS_THAN, GREATER_THAN,
 //		LESS_EQUAL, GREATER_EQUAL,
 //		AND, OR,
+//
+//		QUESTION, COLON,
 //		IF, THEN, ELSE,
 //		WHILE, DO, DONE,
 //

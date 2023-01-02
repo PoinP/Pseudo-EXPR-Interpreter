@@ -9,6 +9,38 @@ Tokenizer::Tokenizer(const std::string& srcCode)
 
 std::list<Token> Tokenizer::tokenize()
 {
+    while (peek() != '\0')
+    {
+        try
+        {
+            collectTokens();
+        }
+        catch (const SyntaxError& error)
+        {
+            std::cout << error.what() << std::endl;
+            next();
+        }
+        catch (...)
+        {
+            throw;
+        }
+    }
+
+    addToken(TokenType::END_OF_FILE);
+
+    return m_Tokens;
+}
+
+std::list<Token> Tokenizer::getTokens()
+{
+    if (m_Tokens.empty())
+        return tokenize();
+
+    return m_Tokens;
+}
+
+void Tokenizer::collectTokens()
+{
     char currChar = peek();
     while (currChar != '\0')
     {
@@ -17,7 +49,7 @@ std::list<Token> Tokenizer::tokenize()
         // Handles unsigned long long numbers
         if (isDigit(currChar))
         {
-            int number = constructNumber();
+            unsigned long long number = constructNumber();
             addToken(TokenType::NUMBER, number);
             continue;
         }
@@ -127,24 +159,12 @@ std::list<Token> Tokenizer::tokenize()
             m_CurrLine++;
             break;
         default:
-            // TODO FIX
-            std::cout << SyntaxError("Invalid or unexpected token", m_CurrLine).what();
+            throw SyntaxError("Invalid or unexpected token", m_CurrLine);
         }
 
-        next();
+        if (currChar != '\0')
+            next();
     }
-
-    addToken(TokenType::END_OF_FILE);
-
-    return m_Tokens;
-}
-
-std::list<Token> Tokenizer::getTokens()
-{
-    if (m_Tokens.empty())
-        return tokenize();
-
-    return m_Tokens;
 }
 
 void Tokenizer::next()
@@ -253,7 +273,7 @@ void Tokenizer::addWord(const std::string& word)
             return;
         }
 
-        std::cout << SyntaxError("Invalid function name!", m_CurrLine).what() << std::endl;
+        throw SyntaxError("Invalid function name!", m_CurrLine);
     }
     else
     {
@@ -263,6 +283,6 @@ void Tokenizer::addWord(const std::string& word)
             return;
         }
 
-        std::cout << SyntaxError("Invalid variable name!", m_CurrLine).what() << std::endl;
+        throw SyntaxError("Invalid variable name!", m_CurrLine);
     }
 }

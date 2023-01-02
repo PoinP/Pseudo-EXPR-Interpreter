@@ -23,6 +23,8 @@ private:
 	size_t m_Iterator;
 	size_t m_CurrLine;
 
+	void collectTokens();
+
 	// -------- Source Code Traversal --------
 	void next();
 	char consume();
