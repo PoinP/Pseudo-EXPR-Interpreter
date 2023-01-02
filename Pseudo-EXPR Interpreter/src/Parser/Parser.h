@@ -15,22 +15,23 @@ public:
 	Parser(const std::list<Token>& tokens);
 	std::list<Instruction*> parse();
 
-	unsigned long long evaluate(Expression* expressions);
-
 private:
 	std::list<Token> m_Tokens;
 	std::list<Token>::iterator m_CurrToken;
 	Environment m_Environment;
 
 	// -------- Instruction Handling -------- //
+	Instruction* instruction();
 	Instruction* variable();
 	Instruction* function();
+	Instruction* condition();
 	Instruction* print();
 	Instruction* read();
 	void eol();
 
 	// -------- Expression Handling -------- //
 	Expression* expression();
+	Expression* ifElseExpr();
 	Expression* ternary();
 	Expression* logical();
 	Expression* equality();
