@@ -21,10 +21,10 @@ public:
 		delete m_Right;
 	}
 
-	unsigned long long evaluate(Environment* env) const override
+	BigInteger evaluate(Environment* env) const override
 	{
-		unsigned long long left = m_Left->evaluate(env);
-		unsigned long long right = m_Right->evaluate(env);
+		BigInteger left = m_Left->evaluate(env);
+		BigInteger right = m_Right->evaluate(env);
 
 		TokenType type = m_Operator.getType();
 
@@ -73,7 +73,7 @@ private:
 	Token m_Operator;
 	Expression* m_Right;
 
-	unsigned long long currLine() const
+	uint64_t currLine() const
 	{
 		return m_Operator.getLine();
 	}

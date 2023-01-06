@@ -8,6 +8,14 @@ BigInteger::BigInteger()
 	m_Numbers.push_back(0);
 }
 
+BigInteger::BigInteger(int32_t number)
+{
+	if (number < 0)
+		throw std::invalid_argument("Negative values are not supported!");
+
+	*this = (uint64_t)number;
+}
+
 BigInteger::BigInteger(uint64_t number)
 {
 	if (number == 0)

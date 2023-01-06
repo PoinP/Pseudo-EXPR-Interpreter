@@ -49,7 +49,7 @@ void Tokenizer::collectTokens()
         // Handles unsigned long long numbers
         if (isDigit(currChar))
         {
-            unsigned long long number = constructNumber();
+            BigInteger number = constructNumber();
             addToken(TokenType::NUMBER, number);
             continue;
         }
@@ -193,7 +193,7 @@ char Tokenizer::consume()
     return m_Src[m_Iterator++];
 }
 
-void Tokenizer::addToken(TokenType type, unsigned long long lit, const std::string& name)
+void Tokenizer::addToken(TokenType type, const BigInteger& lit, const std::string& name)
 {
     m_Tokens.push_back(Token(type, m_CurrLine, lit, name));
 }
@@ -213,13 +213,13 @@ std::string Tokenizer::constructWord()
     return std::string(begin, end);
 }
 
-unsigned long long Tokenizer::constructNumber()
+BigInteger Tokenizer::constructNumber()
 {
-    unsigned long long number = 0;
+    BigInteger number = 0;
 
     while (isDigit(peek()))
     {
-        int digit = consume() - '0';
+        uint8_t digit = consume() - '0';
         number = number * 10 + digit;
     }
 
@@ -243,7 +243,7 @@ bool Tokenizer::isUppercase(char c) const
 
 bool Tokenizer::onlyUppercase(const std::string& word) const
 {
-    for (int i = 0; i < word.length(); i++)
+    for (size_t i = 0; i < word.length(); i++)
     {
         if (!isUppercase(word[i]))
             return false;
@@ -254,7 +254,7 @@ bool Tokenizer::onlyUppercase(const std::string& word) const
 
 bool Tokenizer::onlyLowercase(const std::string& word) const
 {
-    for (int i = 0; i < word.length(); i++)
+    for (size_t i = 0; i < word.length(); i++)
     {
         if (isUppercase(word[i]))
             return false;

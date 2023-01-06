@@ -19,7 +19,7 @@ public:
 
 	void run() override
 	{
-		unsigned long long value;
+		BigInteger value;
 		std::cin >> value;
 		m_Env->set(m_Var->getIdentifier(), new Primitive(value));
 	}

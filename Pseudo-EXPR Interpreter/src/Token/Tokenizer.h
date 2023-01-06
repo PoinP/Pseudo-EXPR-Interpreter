@@ -35,8 +35,8 @@ private:
 
 	// -------- Utility --------
 	std::string constructWord();
-	unsigned long long constructNumber();
-	void addToken(TokenType type, unsigned long long lit = 0, const std::string& name = "");
+	BigInteger constructNumber();
+	void addToken(TokenType type, const BigInteger& lit = 0, const std::string& name = "");
 
 	bool isDigit(char c) const;
 	bool isLetter(char c) const;

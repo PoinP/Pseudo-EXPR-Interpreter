@@ -20,7 +20,7 @@ public:
 		delete m_IfFalse;
 	}
 
-	unsigned long long evaluate(Environment* env) const override
+	BigInteger evaluate(Environment* env) const override
 	{
 		return m_Condition->evaluate(env) ? m_IfTrue->evaluate(env) : m_IfFalse->evaluate(env);
 	}

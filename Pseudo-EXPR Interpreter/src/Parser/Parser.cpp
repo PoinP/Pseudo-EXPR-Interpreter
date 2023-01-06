@@ -387,7 +387,7 @@ TokenType Parser::peekType() const
 	return peek().getType();
 }
 
-unsigned long long Parser::peekLine() const
+uint64_t Parser::peekLine() const
 {
 	return peek().getLine();
 }

@@ -2,6 +2,8 @@
 
 #define INSTRUCTION_H
 
+#include "../../BigInteger/BigInteger.h"
+
 class Instruction
 {
 public:

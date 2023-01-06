@@ -3,6 +3,7 @@
 #define EXPRESSION_H
 
 #include "../../Utility/Common.h"
+#include "../../BigInteger/BigInteger.h"
 
 class Expression
 {
@@ -10,7 +11,7 @@ public:
 	Expression() {}
 	virtual ~Expression() {}
 
-	virtual unsigned long long evaluate(Environment* env) const = 0;
+	virtual BigInteger evaluate(Environment* env) const = 0;
 
 private:
 	Expression(const Expression& other) = delete;

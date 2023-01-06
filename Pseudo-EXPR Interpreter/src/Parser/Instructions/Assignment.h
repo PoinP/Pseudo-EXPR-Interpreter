@@ -23,7 +23,7 @@ public:
 
 	virtual void run() override
 	{
-		unsigned long long value = m_Expr->evaluate(m_Env);
+		BigInteger value = m_Expr->evaluate(m_Env);
 		m_Env->set(m_Name, new Primitive(value));
 	}
 
@@ -31,7 +31,6 @@ private:
 	std::string m_Name;
 	Expression* m_Expr;
 	Environment* m_Env;
-
 };
 
 #endif // !ASSIGNMENT_H

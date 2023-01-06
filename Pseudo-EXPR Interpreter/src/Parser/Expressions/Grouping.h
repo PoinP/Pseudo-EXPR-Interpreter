@@ -17,7 +17,7 @@ public:
 		delete m_Expr;
 	}
 
-	unsigned long long evaluate(Environment* env) const override
+	BigInteger evaluate(Environment* env) const override
 	{
 		return m_Expr->evaluate(env);
 	}

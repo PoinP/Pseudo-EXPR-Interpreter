@@ -15,7 +15,7 @@ public:
 		: m_Var(var)
 	{}
 
-	virtual unsigned long long evaluate(Environment* env) const override
+	BigInteger evaluate(Environment* env) const override
 	{
 		std::string varName = m_Var.getIdentifier();
 

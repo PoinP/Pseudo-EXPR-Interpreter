@@ -18,7 +18,7 @@ public:
 	const std::string& getName() const { return m_Func.getIdentifier(); }
 	const std::string& getParamName() const { return m_Param.getIdentifier(); }
 
-	unsigned long long evaluate(Environment* env) const override { return 0; }
+	BigInteger evaluate(Environment* env) const override { return 0; }
 
 private:
 	Token m_Func;

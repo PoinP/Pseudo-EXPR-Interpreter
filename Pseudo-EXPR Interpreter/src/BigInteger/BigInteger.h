@@ -13,12 +13,14 @@ public:
 
 public:
 	BigInteger();
+	BigInteger(int32_t number); // Used for implicitly converting zero
 	BigInteger(uint64_t number);
 	BigInteger(const char* strNumber);
 	BigInteger(const std::string& strNumber);
 
 	// -------- OPERATOR OVERLOADING --------
 	operator std::string() const { return convertToString(); }
+	explicit operator bool() const { return size() > 1 || m_Numbers[0] != 0; } // Add tests
 
 	friend bool operator==(const BigInteger& lhs, const BigInteger& rhs);
 	friend bool operator!=(const BigInteger& lhs, const BigInteger& rhs);

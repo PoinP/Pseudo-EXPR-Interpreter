@@ -49,7 +49,7 @@ private:
 
 	const Token& peek() const;
 	TokenType peekType() const;
-	unsigned long long peekLine() const;
+	uint64_t peekLine() const;
 
 	void log(const char* msg) const;
 };

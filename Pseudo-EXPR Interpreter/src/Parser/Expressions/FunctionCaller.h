@@ -20,7 +20,7 @@ public:
 		delete m_Arg;
 	}
 
-	unsigned long long evaluate(Environment* env) const override
+	BigInteger evaluate(Environment* env) const override
 	{
 		Environment functionScope(env);
 
@@ -33,7 +33,7 @@ public:
 		if (!func)
 			throw RunTimeError("Internal error! Expression not a function!", m_Func.getLine());
 
-		unsigned long long argValue = m_Arg->evaluate(&functionScope);
+		BigInteger argValue = m_Arg->evaluate(&functionScope);
 		functionScope.set(func->getParamName(), new Primitive(argValue));
 
 		return func->getBody()->evaluate(&functionScope);
