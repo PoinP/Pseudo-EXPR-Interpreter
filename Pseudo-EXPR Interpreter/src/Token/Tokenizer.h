@@ -6,21 +6,21 @@
 #include "TokenType.h"
 
 #include <string>
-#include <list>
+#include <vector>
 
 class Tokenizer
 {
 public:
 	Tokenizer(const std::string& srcCode);
 
-	std::list<Token> tokenize();
-	std::list<Token> getTokens();
+	std::vector<Token> tokenize();
+	std::vector<Token> getTokens();
 
 	bool isAtEnd() const;
 
 private:
 	std::string m_Src;
-	std::list<Token> m_Tokens;
+	std::vector<Token> m_Tokens;
 
 	size_t m_Iterator;
 	size_t m_CurrLine;

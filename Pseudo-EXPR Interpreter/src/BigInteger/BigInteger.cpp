@@ -234,7 +234,6 @@ BigInteger operator*(const BigInteger& lhs, const BigInteger& rhs)
 
 	for (size_t i = 0; i < lhsPtr->size(); i++)
 	{
-		// most likely a bug in vs intelisense bullshit
 		result = result + products[i];
 	}
 
@@ -441,7 +440,7 @@ RadixSize BigInteger::toNumber(const char* numStr) const
 
 BigInteger BigInteger::setSize(size_t initalSize)
 {
-	m_Numbers = std::deque<RadixSize>(initalSize);
+	m_Numbers = std::deque<RadixSize>(initalSize, 0);
 	return *this;
 }
 

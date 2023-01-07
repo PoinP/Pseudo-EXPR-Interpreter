@@ -9,7 +9,7 @@ Interpreter::Interpreter(std::string& srcCode)
 	: m_Status(true)
 {
 	Tokenizer lexer(srcCode);
-	std::list<Token> tokens;
+	std::vector<Token> tokens;
 
 	while (!lexer.isAtEnd())
 	{

@@ -19,14 +19,15 @@
 #include "../Errors/SyntaxError.h"
 #include "../Errors/RunTimeError.h"
 
-Parser::Parser(const std::list<Token>& tokens, Environment* environmnet)
+Parser::Parser(const std::vector<Token>& tokens, Environment* environmnet)
 	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin()), m_Environment(environmnet)
 {
 }
 
-std::list<Instruction*> Parser::parse()
+std::vector<Instruction*> Parser::parse()
 {
-	std::list<Instruction*> instructions;
+	std::vector<Instruction*> instructions;
+	instructions.reserve(m_Tokens.back().getLine());
 
 	while (peekType() != TokenType::END_OF_FILE)
 	{

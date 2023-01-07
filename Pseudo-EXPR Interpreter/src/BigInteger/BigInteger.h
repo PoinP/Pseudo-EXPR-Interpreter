@@ -51,7 +51,7 @@ private:
 	std::deque<RadixSize> m_Numbers;
 
 	static const RadixSize BASE_NUM = 100;
-	static const int BASE_LENGTH = 3;
+	static const uint8_t BASE_LENGTH = 3;
 
 	static void divide(BigInteger lhs,
 		BigInteger rhs,

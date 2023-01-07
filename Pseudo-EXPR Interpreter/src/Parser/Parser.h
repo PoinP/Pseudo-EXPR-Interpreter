@@ -2,7 +2,8 @@
 
 #define PARSER_H
 
-#include <list>
+#include <vector>
+
 #include "../Token/Token.h"
 #include "Expressions/Expression.h"
 #include "Instructions/Instruction.h"
@@ -12,13 +13,13 @@
 class Parser
 {
 public:
-	Parser(const std::list<Token>& tokens, Environment* environmnet);
-	std::list<Instruction*> parse();
+	Parser(const std::vector<Token>& tokens, Environment* environmnet);
+	std::vector<Instruction*> parse();
 	bool isAtEnd() const;
 
 private:
-	std::list<Token> m_Tokens;
-	std::list<Token>::iterator m_CurrToken;
+	std::vector<Token> m_Tokens;
+	std::vector<Token>::iterator m_CurrToken;
 	Environment* m_Environment;
 
 	// -------- Instruction Handling -------- //

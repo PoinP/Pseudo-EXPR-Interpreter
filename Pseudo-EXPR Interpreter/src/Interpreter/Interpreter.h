@@ -16,7 +16,7 @@ public:
 private:
 	bool m_Status;
 	Environment m_Environment;
-	std::list<Instruction*> m_Instructions;
+	std::vector<Instruction*> m_Instructions;
 };
 
 #endif // !INTERPRETER_H

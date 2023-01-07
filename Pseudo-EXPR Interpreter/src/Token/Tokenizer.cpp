@@ -7,7 +7,7 @@ Tokenizer::Tokenizer(const std::string& srcCode)
 {
 }
 
-std::list<Token> Tokenizer::tokenize()
+std::vector<Token> Tokenizer::tokenize()
 {
     while (peek() != '\0')
     {
@@ -28,7 +28,7 @@ std::list<Token> Tokenizer::tokenize()
     return m_Tokens;
 }
 
-std::list<Token> Tokenizer::getTokens()
+std::vector<Token> Tokenizer::getTokens()
 {
     if (m_Tokens.empty())
         return tokenize();
@@ -197,7 +197,7 @@ char Tokenizer::consume()
 
 void Tokenizer::addToken(TokenType type, const BigInteger& lit, const std::string& name)
 {
-    m_Tokens.push_back(Token(type, m_CurrLine, lit, name));
+    m_Tokens.emplace_back(type, m_CurrLine, lit, name);
 }
 
 std::string Tokenizer::constructWord()
