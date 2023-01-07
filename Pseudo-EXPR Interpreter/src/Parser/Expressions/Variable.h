@@ -3,10 +3,6 @@
 #define VARAIBLE_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
-#include "../Environmnet.h"
-
-#include "../../Exceptions/RunTimeError.h"
 
 class Variable : public Expression
 {

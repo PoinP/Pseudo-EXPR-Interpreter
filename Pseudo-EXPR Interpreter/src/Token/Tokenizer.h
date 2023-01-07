@@ -16,6 +16,8 @@ public:
 	std::list<Token> tokenize();
 	std::list<Token> getTokens();
 
+	bool isAtEnd() const;
+
 private:
 	std::string m_Src;
 	std::list<Token> m_Tokens;

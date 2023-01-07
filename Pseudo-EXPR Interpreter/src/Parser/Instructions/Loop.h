@@ -3,10 +3,6 @@
 #define LOOP_H
 
 #include "Instruction.h"
-#include "../Expressions/Expression.h"
-#include <vector>
-
-#include "../Environmnet.h"
 
 class Loop : public Instruction
 {

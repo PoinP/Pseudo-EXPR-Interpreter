@@ -3,7 +3,6 @@
 #define CONDITION_H
 
 #include "Instruction.h"
-#include "../Expressions/Expression.h"
 
 class Condition : public Instruction
 {

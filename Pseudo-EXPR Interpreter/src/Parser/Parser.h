@@ -6,19 +6,20 @@
 #include "../Token/Token.h"
 #include "Expressions/Expression.h"
 #include "Instructions/Instruction.h"
-#include "Environmnet.h"
+#include "../Interpreter/Environmnet.h"
 
 
 class Parser
 {
 public:
-	Parser(const std::list<Token>& tokens);
+	Parser(const std::list<Token>& tokens, Environment* environmnet);
 	std::list<Instruction*> parse();
+	bool isAtEnd() const;
 
 private:
 	std::list<Token> m_Tokens;
 	std::list<Token>::iterator m_CurrToken;
-	Environment m_Environment;
+	Environment* m_Environment;
 
 	// -------- Instruction Handling -------- //
 	Instruction* instruction();

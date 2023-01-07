@@ -1,24 +1,26 @@
 #include "Parser.h"
 
+#include "Expressions/Unary.h"
 #include "Expressions/Binary.h"
+#include "Expressions/Ternary.h"
+#include "Expressions/Variable.h"
 #include "Expressions/Grouping.h"
 #include "Expressions/Primitive.h"
-#include "Expressions/Unary.h"
-#include "Expressions/Variable.h"
 #include "Expressions/FunctionCaller.h"
-#include "Expressions/Ternary.h"
 
-#include "../Exceptions/SyntaxError.h"
-#include "Instructions/Instruction.h"
-#include "Instructions/Print.h"
-#include "Instructions/Assignment.h"
-#include "Instructions/Read.h"
-#include "Instructions/Declaration.h"
-#include "Instructions/Condition.h"
 #include "Instructions/Loop.h"
+#include "Instructions/Read.h"
+#include "Instructions/Print.h"
+#include "Instructions/Condition.h"
+#include "Instructions/Assignment.h"
+#include "Instructions/Declaration.h"
+#include "Instructions/Instruction.h"
 
-Parser::Parser(const std::list<Token>& tokens)
-	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin())
+#include "../Errors/SyntaxError.h"
+#include "../Errors/RunTimeError.h"
+
+Parser::Parser(const std::list<Token>& tokens, Environment* environmnet)
+	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin()), m_Environment(environmnet)
 {
 }
 
@@ -35,18 +37,19 @@ std::list<Instruction*> Parser::parse()
 			if (instr)
 				instructions.push_back(instr);
 		}
-		catch (const SyntaxError& error)
+		catch (const SyntaxError&)
 		{
-			std::cout << error.what() << std::endl;
-			skipLine();
-		}
-		catch (...)
-		{
+			eol();
 			throw;
 		}
 	}
 
 	return instructions;
+}
+
+bool Parser::isAtEnd() const
+{
+	return peekType() == TokenType::END_OF_FILE;
 }
 
 Instruction* Parser::instruction()
@@ -80,7 +83,7 @@ Instruction* Parser::variable()
 	if (peekType() == TokenType::EQUALS)
 	{
 		next();
-		assignmentInstr = new Assignment(varName, expression(), &m_Environment);
+		assignmentInstr = new Assignment(varName, expression(), m_Environment);
 
 		if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
 			throw SyntaxError("Expected one statement per row only!", peekLine());
@@ -113,7 +116,7 @@ Instruction* Parser::function()
 	if (consumeType() != TokenType::EQUALS)
 		throw SyntaxError("Invalid function declaration", peekLine());
 
-	declInstr = new Declaration(funcToken, paramToken, expression(), &m_Environment);
+	declInstr = new Declaration(funcToken, paramToken, expression(), m_Environment);
 
 	return declInstr;
 }
@@ -135,7 +138,7 @@ Instruction* Parser::condition()
 
 	Instruction* ifFalse = instruction();
 
-	return new Condition(condition, ifTrue, ifFalse, &m_Environment);
+	return new Condition(condition, ifTrue, ifFalse, m_Environment);
 }
 
 Instruction* Parser::loop()
@@ -165,7 +168,7 @@ Instruction* Parser::loop()
 
 	consume();
 
-	loopInstr = new Loop(condition, instructions, &m_Environment);
+	loopInstr = new Loop(condition, instructions, m_Environment);
 
 	return loopInstr;
 }
@@ -176,7 +179,7 @@ Instruction* Parser::print()
 
 	next();
 
-	printInstr = new Print(expression(), &m_Environment);
+	printInstr = new Print(expression(), m_Environment);
 
 	if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
 		throw SyntaxError("Expected one statement per row only!", peekLine());
@@ -193,7 +196,7 @@ Instruction* Parser::read()
 	if (peekType() != TokenType::VARIABLE)
 		throw SyntaxError("Can not apply value to a non variable token!", peekLine());
 
-	readInstr = new Read(&consume(), &m_Environment);
+	readInstr = new Read(&consume(), m_Environment);
 
 	if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
 		throw SyntaxError("Expected one statement per row only", peekLine());
@@ -203,6 +206,9 @@ Instruction* Parser::read()
 
 void Parser::eol()
 {
+	if (peekType() == TokenType::END_OF_FILE)
+		return;
+
 	skipLine();
 }
 

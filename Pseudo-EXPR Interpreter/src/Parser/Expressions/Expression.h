@@ -2,7 +2,8 @@
 
 #define EXPRESSION_H
 
-#include "../../Utility/Common.h"
+#include "../../Utility/Helper.h"
+#include "../../Errors/RunTimeError.h"
 #include "../../BigInteger/BigInteger.h"
 
 class Expression

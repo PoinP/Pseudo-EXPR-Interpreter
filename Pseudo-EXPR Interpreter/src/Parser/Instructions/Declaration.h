@@ -2,10 +2,7 @@
 
 #define DECLARATION_H
 
-#include "../Environmnet.h"
-#include "../Expressions/Expression.h"
 #include "Instruction.h"
-#include "../Expressions/FunctionDeclaration.h"
 
 class Declaration : public Instruction
 {

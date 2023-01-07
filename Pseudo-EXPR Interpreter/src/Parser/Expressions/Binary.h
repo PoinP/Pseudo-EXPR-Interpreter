@@ -3,10 +3,6 @@
 #define BINARY_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
-#include "../../Exceptions/RunTimeError.h"
-
-#include <iostream>
 
 class Binary : public Expression
 {

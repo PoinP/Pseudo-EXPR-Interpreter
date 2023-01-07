@@ -1,7 +1,7 @@
 #include "Environmnet.h"
 
-#include "../Utility/Common.h"
-#include <cassert>
+#include "../Utility/Helper.h"
+#include "../Parser/Expressions/Expression.h"
 
 Environment::Environment()
     : m_PrevEnv(nullptr)

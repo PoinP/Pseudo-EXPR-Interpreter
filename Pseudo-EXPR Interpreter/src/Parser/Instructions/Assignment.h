@@ -3,9 +3,6 @@
 #define ASSIGNMENT_H
 
 #include "Instruction.h"
-#include "../Environmnet.h"
-#include <string>
-#include "../Expressions/Expression.h"
 
 class Assignment : public Instruction
 {

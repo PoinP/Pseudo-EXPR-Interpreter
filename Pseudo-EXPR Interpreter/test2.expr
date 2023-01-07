@@ -1,0 +1,25 @@
+D[x] = x
+
+print D[5]
+print 0
+print 0
+
+x = 0
+while x < 3 do
+    i = 0
+
+    D[x] = x + 10
+
+    while i < 5 and x % 2 == 0 do
+        print D[x] + 1000
+        i = i + 1
+    done
+
+    print x
+    x = x + 1
+done
+
+print 0
+print 0
+
+print D[10]

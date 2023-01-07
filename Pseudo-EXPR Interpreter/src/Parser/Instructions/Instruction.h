@@ -2,8 +2,7 @@
 
 #define INSTRUCTION_H
 
-#include "../../BigInteger/BigInteger.h"
-#include "../Environmnet.h"
+#include "../../Interpreter/Environmnet.h"
 
 class Instruction
 {

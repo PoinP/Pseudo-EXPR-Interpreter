@@ -3,7 +3,6 @@
 #define PRIMITIVE_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
 
 class Primitive : public Expression
 {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Parser\Environmnet.cpp" />
+    <ClCompile Include="src\Interpreter\Environmnet.cpp" />
     <ClCompile Include="src\Parser\Instructions\Instruction.h" />
     <ClCompile Include="src\Parser\Parser.cpp" />
     <ClCompile Include="src\Source.cpp" />
@@ -10,11 +10,12 @@
     <ClCompile Include="tests\Tester.cpp" />
     <ClCompile Include="tests\TokenizerTests.h" />
     <ClCompile Include="src\BigInteger\BigInteger.cpp" />
+    <ClCompile Include="src\Interpreter\Interpreter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Exceptions\Error.h" />
-    <ClInclude Include="src\Exceptions\RunTimeError.h" />
-    <ClInclude Include="src\Parser\Environmnet.h" />
+    <ClInclude Include="src\Errors\Error.h" />
+    <ClInclude Include="src\Errors\RunTimeError.h" />
+    <ClInclude Include="src\Interpreter\Environmnet.h" />
     <ClInclude Include="src\Parser\Expressions\Binary.h" />
     <ClInclude Include="src\Parser\Expressions\Variable.h" />
     <ClInclude Include="src\Parser\Instructions\Assignment.h" />
@@ -24,8 +25,7 @@
     <ClInclude Include="src\Parser\Expressions\Grouping.h" />
     <ClInclude Include="src\Parser\Expressions\Primitive.h" />
     <ClInclude Include="src\Parser\Expressions\Unary.h" />
-    <ClInclude Include="src\Exceptions\Log.h" />
-    <ClInclude Include="src\Exceptions\SyntaxError.h" />
+    <ClInclude Include="src\Errors\SyntaxError.h" />
     <ClInclude Include="src\Token\Token.h" />
     <ClInclude Include="src\Token\TokenType.h" />
     <ClInclude Include="src\Token\Tokenizer.h" />
@@ -34,10 +34,12 @@
     <ClInclude Include="src\Parser\Expressions\FunctionCaller.h" />
     <ClInclude Include="src\Parser\Expressions\FunctionDeclaration.h" />
     <ClInclude Include="src\Parser\Instructions\Declaration.h" />
-    <ClInclude Include="src\Utility\Common.h" />
+    <ClInclude Include="src\Utility\Helper.h" />
     <ClInclude Include="src\Parser\Expressions\Ternary.h" />
     <ClInclude Include="src\Parser\Instructions\Condition.h" />
     <ClInclude Include="src\BigInteger\BigInteger.h" />
     <ClInclude Include="tests\BigIntegerTests.h" />
+    <ClInclude Include="src\Parser\Instructions\Loop.h" />
+    <ClInclude Include="src\Interpreter\Interpreter.h" />
   </ItemGroup>
 </Project>

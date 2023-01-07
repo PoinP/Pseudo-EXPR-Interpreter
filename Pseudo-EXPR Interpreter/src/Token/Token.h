@@ -3,6 +3,7 @@
 #define TOKEN_H
 
 #include <string>
+
 #include "TokenType.h"
 #include "../BigInteger/BigInteger.h"
 

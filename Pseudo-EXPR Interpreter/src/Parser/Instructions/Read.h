@@ -3,12 +3,6 @@
 #define READ_H
 
 #include "Instruction.h"
-#include "../../Exceptions/RunTimeError.h"
-#include "../Expressions/Expression.h"
-#include "../Environmnet.h"
-#include "../../Token/Token.h"
-#include <iostream>
-
 
 class Read : public Instruction
 {

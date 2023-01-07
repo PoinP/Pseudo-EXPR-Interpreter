@@ -24,16 +24,9 @@
 //	std::cout << "Done!";
 //}
 
-#include "Token/Tokenizer.h"
 #include <fstream>
-#include "Parser/Parser.h"
 #include <iostream>
-
-#include "Parser/Expressions/Binary.h"
-#include <stdexcept>
-
-#include "Parser/Instructions/Instruction.h"
-#include "Parser/Expressions/Primitive.h"
+#include "Interpreter/Interpreter.h"
 
 //
 #ifdef _DEBUG
@@ -42,10 +35,19 @@
 #define new new
 #endif
 
-int main()
+//#define CMD_INPUT
+
+int main(int argc, char* argv[])
 {
 	{
-		const char* path = "test.expr";
+
+#ifdef CMD_INPUT
+		std::string path = argv[1];
+
+#else
+		const char* path = "test2.expr";
+#endif // CMD_INPUT
+
 
 		std::ifstream input(path);
 
@@ -58,42 +60,10 @@ int main()
 
 		input.close();
 
-		Tokenizer tokenizer(srcCode);
+		Interpreter interpreter(srcCode);
+		interpreter.interpret();
 
-		std::list<Token> tokens = tokenizer.tokenize();
-
-		Parser parser(tokens);
-
-		unsigned int test = (265 + 76 * 9 + 8 / 12 + (12 - 2 - 3) * 10);
-
-		std::list<Instruction*> parsed;
-
-		try {
-			parsed = parser.parse();
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << e.what();
-		}
-
-		for (auto p : parsed)
-		{
-			try
-			{
-				p->run();
-			}
-			catch (const std::exception& e)
-			{
-				std::cout << e.what();
-				return -1;
-			}
-		}
-
-		for (auto p : parsed)
-		{
-			delete p;
-		}
-
+		
 	}
 
 	_CrtDumpMemoryLeaks();

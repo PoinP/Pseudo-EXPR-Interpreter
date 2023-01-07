@@ -3,8 +3,6 @@
 #define TERNARY_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
-#include "../../Exceptions/RunTimeError.h"
 
 class Ternary : public Expression
 {

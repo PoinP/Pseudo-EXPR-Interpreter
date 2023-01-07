@@ -1,6 +1,6 @@
 #include "Tokenizer.h"
-#include "../Exceptions/SyntaxError.h"
-#include <iostream>
+
+#include "../Errors/SyntaxError.h"
 
 Tokenizer::Tokenizer(const std::string& srcCode)
     : m_Src(srcCode), m_Iterator(0), m_CurrLine(1)
@@ -15,17 +15,14 @@ std::list<Token> Tokenizer::tokenize()
         {
             collectTokens();
         }
-        catch (const SyntaxError& error)
+        catch (const SyntaxError&)
         {
-            std::cout << error.what() << std::endl;
             next();
-        }
-        catch (...)
-        {
             throw;
         }
     }
 
+    addToken(TokenType::END_OF_LINE);
     addToken(TokenType::END_OF_FILE);
 
     return m_Tokens;
@@ -37,6 +34,11 @@ std::list<Token> Tokenizer::getTokens()
         return tokenize();
 
     return m_Tokens;
+}
+
+bool Tokenizer::isAtEnd() const
+{
+    return peek() == '\0';
 }
 
 void Tokenizer::collectTokens()

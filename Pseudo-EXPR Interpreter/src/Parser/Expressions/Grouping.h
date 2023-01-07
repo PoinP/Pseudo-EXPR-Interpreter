@@ -3,7 +3,6 @@
 #define GROUPING_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
 
 class Grouping : public Expression
 {

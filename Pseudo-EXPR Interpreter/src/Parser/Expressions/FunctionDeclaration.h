@@ -3,7 +3,6 @@
 #define FUNCTION_DECLARATION_H
 
 #include "Expression.h"
-#include "../../Token/Token.h"
 
 class FunctionDeclaration : public Expression 
 {
