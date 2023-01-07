@@ -14,6 +14,7 @@ public:
 	~Environment();
 
 	void set(const std::string& key, Expression* expr);
+	void setOnSelf(const std::string& key, Expression* expr);
 
 	bool contains(const std::string& key) const;
 	const Expression* get(const std::string& key) const;

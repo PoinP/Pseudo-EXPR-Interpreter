@@ -21,10 +21,13 @@ public:
 		delete m_Expr;
 	}
 
-	virtual void run() override
+	virtual void run(Environment* env) override
 	{
-		BigInteger value = m_Expr->evaluate(m_Env);
-		m_Env->set(m_Name, new Primitive(value));
+		if (!env)
+			env = m_Env;
+
+		BigInteger value = m_Expr->evaluate(env);
+		env->set(m_Name, new Primitive(value));
 	}
 
 private:

@@ -87,9 +87,13 @@ int main()
 				std::cout << e.what();
 				return -1;
 			}
+		}
 
+		for (auto p : parsed)
+		{
 			delete p;
 		}
+
 	}
 
 	_CrtDumpMemoryLeaks();

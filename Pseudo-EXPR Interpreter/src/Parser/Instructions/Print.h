@@ -16,9 +16,12 @@ public:
 		delete m_Expr;
 	}
 
-	void run() override
+	void run(Environment* env) override
 	{
-		std::cout << m_Expr->evaluate(m_Env) << std::endl;
+		if (!env)
+			env = m_Env;
+
+		std::cout << m_Expr->evaluate(env) << std::endl;
 	}
 
 private:

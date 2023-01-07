@@ -25,6 +25,7 @@ private:
 	Instruction* variable();
 	Instruction* function();
 	Instruction* condition();
+	Instruction* loop();
 	Instruction* print();
 	Instruction* read();
 	void eol();
@@ -33,7 +34,8 @@ private:
 	Expression* expression();
 	Expression* ifElseExpr();
 	Expression* ternary();
-	Expression* logical();
+	Expression* logicalOr();
+	Expression* logicalAnd();
 	Expression* equality();
 	Expression* comparison();
 	Expression* arithmetic();

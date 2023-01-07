@@ -34,7 +34,7 @@ public:
 			throw RunTimeError("Internal error! Expression not a function!", m_Func.getLine());
 
 		BigInteger argValue = m_Arg->evaluate(&functionScope);
-		functionScope.set(func->getParamName(), new Primitive(argValue));
+		functionScope.setOnSelf(func->getParamName(), new Primitive(argValue));
 
 		return func->getBody()->evaluate(&functionScope);
 	}

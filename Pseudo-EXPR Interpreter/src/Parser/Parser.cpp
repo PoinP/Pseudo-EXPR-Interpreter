@@ -15,6 +15,7 @@
 #include "Instructions/Read.h"
 #include "Instructions/Declaration.h"
 #include "Instructions/Condition.h"
+#include "Instructions/Loop.h"
 
 Parser::Parser(const std::list<Token>& tokens)
 	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin())
@@ -55,12 +56,17 @@ Instruction* Parser::instruction()
 	case TokenType::VARIABLE:	 return variable();
 	case TokenType::FUNCTION:	 return function();
 	case TokenType::IF:			 return condition();
+	case TokenType::WHILE:		 return loop();
 	case TokenType::PRINT:		 return print();
 	case TokenType::READ:		 return read();
 
 	case TokenType::END_OF_LINE: eol(); break;
-
-	default:	throw SyntaxError("Expected a declaration", peekLine());
+		
+	case TokenType::ELSE:		 throw SyntaxError("\"else\" can not be used without and if expression", peekLine());
+	case TokenType::THEN:		 throw SyntaxError("\"then\" must be used after an if condition", peekLine());
+	case TokenType::DO:		     throw SyntaxError("\"do\" must be used after a loop condition", peekLine());
+	case TokenType::DONE:        throw SyntaxError("\"done\" can not be used witout a while loop", peekLine());
+	default:			         throw SyntaxError("Expected a declaration", peekLine());
 	}
 
 	return nullptr;
@@ -117,7 +123,7 @@ Instruction* Parser::condition()
 	Instruction* conditionInstr = nullptr;
 	consume();
 
-	Expression* condition = logical();
+	Expression* condition = logicalOr();
 
 	if (consumeType() != TokenType::THEN)
 		throw SyntaxError("Expected \"then\" after condition", peekLine());
@@ -130,6 +136,38 @@ Instruction* Parser::condition()
 	Instruction* ifFalse = instruction();
 
 	return new Condition(condition, ifTrue, ifFalse, &m_Environment);
+}
+
+Instruction* Parser::loop()
+{
+	Instruction* loopInstr = nullptr;
+	consume();
+
+	Expression* condition = logicalOr();
+
+	if (consumeType() != TokenType::DO)
+		throw SyntaxError("Expected \"do\" after condition", peekLine());
+
+	std::vector<Instruction*> instructions;
+	while (peekType() != TokenType::DONE)
+	{
+		if (peekType() == TokenType::END_OF_LINE)
+		{
+			eol();
+			continue;
+		}
+
+		if (peekType() == TokenType::END_OF_FILE)
+			throw SyntaxError("Expected \"done\"", peekLine());
+
+		instructions.push_back(instruction());
+	}
+
+	consume();
+
+	loopInstr = new Loop(condition, instructions, &m_Environment);
+
+	return loopInstr;
 }
 
 Instruction* Parser::print()
@@ -180,7 +218,7 @@ Expression* Parser::ifElseExpr()
 
 	next();
 
-	Expression* left = logical();
+	Expression* left = logicalOr();
 
 	if (consumeType() != TokenType::THEN)
 		throw SyntaxError("Expected \"then\" after condition", peekLine());
@@ -199,18 +237,18 @@ Expression* Parser::ifElseExpr()
 
 Expression* Parser::ternary()
 {
-	Expression* left = logical();
+	Expression* left = logicalOr();
 
 	if (peekType() == TokenType::QUESTION)
 	{
 		next();
 		
-		Expression* ifTrue = expression();
+		Expression* ifTrue = ternary();
 
 		if (consumeType() != TokenType::COLON)
 			throw SyntaxError("Expected ':'", peekLine());
 
-		Expression* ifFalse = expression();
+		Expression* ifFalse = ternary();
 
 		left = new Ternary(left, ifTrue, ifFalse);
 	}
@@ -218,13 +256,30 @@ Expression* Parser::ternary()
 	return left;
 }
 
-Expression* Parser::logical()
+Expression* Parser::logicalOr()
+{
+	Expression* left = logicalAnd();
+
+	TokenType type = peekType();
+
+	while (type == TokenType::OR)
+	{
+		Token op = consume();
+		Expression* right = logicalAnd();
+		type = peekType();
+		left = new Binary(left, op, right);
+	}
+
+	return left;
+}
+ 
+Expression* Parser::logicalAnd()
 {
 	Expression* left = equality();
 
 	TokenType type = peekType();
 
-	while (type == TokenType::AND || type == TokenType::OR)
+	while (type == TokenType::AND)
 	{
 		Token op = consume();
 		Expression* right = equality();

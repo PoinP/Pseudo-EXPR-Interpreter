@@ -38,6 +38,11 @@ void Environment::set(const std::string & key, Expression* expr)
         m_PrevEnv->set(key, expr);
 }
 
+void Environment::setOnSelf(const std::string& key, Expression* expr)
+{
+    m_Table[key] = expr;
+}
+
 bool Environment::contains(const std::string& key) const 
 { 
     if (m_Table.find(key) == m_Table.end())

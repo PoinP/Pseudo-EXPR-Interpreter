@@ -15,10 +15,18 @@ public:
 	{
 	}
 
-	virtual void run()
+	~Declaration()
 	{
+		delete m_Body;
+	}
+
+	void run(Environment* env) override
+	{
+		if (!env)
+			env = m_Env;
+
 		FunctionDeclaration* func = new FunctionDeclaration(m_Name, m_Param, m_Body);
-		m_Env->set(m_Name.getIdentifier(), func);
+		env->setOnSelf(m_Name.getIdentifier(), func);
 	}
 
 private:

@@ -19,9 +19,12 @@ public:
 		delete m_IfFalse;
 	}
 
-	virtual void run() override
+	virtual void run(Environment* env) override
 	{
-		if (m_Condition->evaluate(m_Env))
+		if (!env)
+			env = m_Env;
+
+		if (m_Condition->evaluate(env))
 			m_IfTrue->run();
 		else
 			m_IfFalse->run();

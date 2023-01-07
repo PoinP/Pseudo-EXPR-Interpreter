@@ -17,11 +17,14 @@ public:
 		: m_Var(name), m_Env(env)
 	{}
 
-	void run() override
+	void run(Environment* env) override
 	{
+		if (!env)
+			env = m_Env;
+
 		BigInteger value;
 		std::cin >> value;
-		m_Env->set(m_Var->getIdentifier(), new Primitive(value));
+		env->set(m_Var->getIdentifier(), new Primitive(value));
 	}
 
 private:

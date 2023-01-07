@@ -3,6 +3,7 @@
 #define INSTRUCTION_H
 
 #include "../../BigInteger/BigInteger.h"
+#include "../Environmnet.h"
 
 class Instruction
 {
@@ -10,7 +11,7 @@ public:
 	virtual ~Instruction()
 	{}
 
-	virtual void run() = 0;
+	virtual void run(Environment* env = nullptr) = 0;
 };
 
 #endif // !INSTRUCTION_H
