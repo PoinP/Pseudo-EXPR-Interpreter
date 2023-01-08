@@ -54,8 +54,9 @@ private:
 	const Token& peek() const;
 	TokenType peekType() const;
 	uint64_t peekLine() const;
+	uint64_t prevLine() const;
 
-	void log(const char* msg) const;
+	bool hasMoreInstructions() const;
 };
 
 #endif // !PARSER_H

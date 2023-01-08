@@ -395,11 +395,6 @@ bool BigInteger::isDigit(char c) const
 	return c >= '0' && c <= '9';
 }
 
-uint8_t BigInteger::toDigit(char c) const
-{
-	return c - '0';
-}
-
 std::string BigInteger::convertToString() const
 {
 	std::string bigInt;

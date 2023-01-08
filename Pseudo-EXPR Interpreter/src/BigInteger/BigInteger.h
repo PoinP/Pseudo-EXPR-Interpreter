@@ -63,7 +63,6 @@ private:
 	RadixSize  operator[](size_t index) const { return m_Numbers[index]; };
 
 	bool isDigit(char c) const;
-	uint8_t toDigit(char c) const;
 	std::string convertToString() const;
 	RadixSize toNumber(const char* numStr) const;
 

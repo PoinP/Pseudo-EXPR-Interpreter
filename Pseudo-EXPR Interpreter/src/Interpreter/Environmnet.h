@@ -24,12 +24,13 @@ private:
 	std::unordered_map<std::string, Expression*> m_Table;
 	Environment* m_PrevEnv;
 
+	bool hasKey(const std::string& key) const;
+
 	Environment(const Environment& other) = delete;
 	Environment(Environment&& other) = delete;
 
 	Environment& operator=(const Environment& other) = delete;
 	Environment& operator=(Environment&& other) = delete;
-
 };
 
 #endif // !ENVIRONMENT_H

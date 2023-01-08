@@ -275,7 +275,7 @@ void Tokenizer::addWord(const std::string& word)
             return;
         }
 
-        throw SyntaxError("Invalid function name!", m_CurrLine);
+        throw SyntaxError("Invalid function name", m_CurrLine);
     }
     else
     {
@@ -285,6 +285,6 @@ void Tokenizer::addWord(const std::string& word)
             return;
         }
 
-        throw SyntaxError("Invalid variable name!", m_CurrLine);
+        throw SyntaxError("Invalid variable name", m_CurrLine);
     }
 }

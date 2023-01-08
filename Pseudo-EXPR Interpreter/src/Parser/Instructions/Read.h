@@ -7,7 +7,7 @@
 class Read : public Instruction
 {
 public:
-	Read(const Token* name, Environment* env)
+	Read(Token name, Environment* env)
 		: m_Var(name), m_Env(env)
 	{}
 
@@ -18,11 +18,11 @@ public:
 
 		BigInteger value;
 		std::cin >> value;
-		env->set(m_Var->getIdentifier(), new Primitive(value));
+		env->set(m_Var.getIdentifier(), new Primitive(value));
 	}
 
 private:
-	const Token* m_Var;
+	Token m_Var;
 	Environment* m_Env;
 };
 

@@ -27,6 +27,10 @@ Parser::Parser(const std::vector<Token>& tokens, Environment* environmnet)
 std::vector<Instruction*> Parser::parse()
 {
 	std::vector<Instruction*> instructions;
+
+	if (m_Tokens.empty())
+		return instructions;
+
 	instructions.reserve(m_Tokens.back().getLine());
 
 	while (peekType() != TokenType::END_OF_FILE)
@@ -40,6 +44,9 @@ std::vector<Instruction*> Parser::parse()
 		}
 		catch (const SyntaxError&)
 		{
+			for (Instruction* instruction : instructions)
+				delete instruction;
+
 			eol();
 			throw;
 		}
@@ -50,6 +57,9 @@ std::vector<Instruction*> Parser::parse()
 
 bool Parser::isAtEnd() const
 {
+	if (m_Tokens.empty())
+		return true;
+
 	return peekType() == TokenType::END_OF_FILE;
 }
 
@@ -66,8 +76,8 @@ Instruction* Parser::instruction()
 
 	case TokenType::END_OF_LINE: eol(); break;
 		
-	case TokenType::ELSE:		 throw SyntaxError("\"else\" can not be used without and if expression", peekLine());
-	case TokenType::THEN:		 throw SyntaxError("\"then\" must be used after an if condition", peekLine());
+	case TokenType::ELSE:		 throw SyntaxError("\"else\" can not be used without an \"if\" expression", peekLine());
+	case TokenType::THEN:		 throw SyntaxError("\"then\" must be used after an \"if\" condition", peekLine());
 	case TokenType::DO:		     throw SyntaxError("\"do\" must be used after a loop condition", peekLine());
 	case TokenType::DONE:        throw SyntaxError("\"done\" can not be used witout a while loop", peekLine());
 	default:			         throw SyntaxError("Expected a declaration", peekLine());
@@ -86,13 +96,16 @@ Instruction* Parser::variable()
 		next();
 		assignmentInstr = new Assignment(varName, expression(), m_Environment);
 
-		if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
-			throw SyntaxError("Expected one statement per row only!", peekLine());
+		if (hasMoreInstructions())
+		{
+			delete assignmentInstr;
+			throw SyntaxError("Expected one instruction per row only", peekLine());
+		}
 
 		return assignmentInstr;
 	}
 			
-	throw SyntaxError("Expected variable initalization!", peekLine());
+	throw SyntaxError("Expected variable initalization", peekLine());
 }
 
 Instruction* Parser::function()
@@ -101,7 +114,7 @@ Instruction* Parser::function()
 	Token funcToken = consume();
 
 	if (consumeType() != TokenType::OPEN_BRACKET)
-		throw SyntaxError("Expected a parameter after function declaration", peekLine());
+		throw SyntaxError("Expected a parameter after function declaration", prevLine());
 
 	if (peekType() == TokenType::CLOSE_BRACKET)
 		throw SyntaxError("0 parameters are not supported", peekLine());
@@ -112,12 +125,18 @@ Instruction* Parser::function()
 	Token paramToken = consume();
 
 	if (consumeType() != TokenType::CLOSE_BRACKET)
-		throw SyntaxError("Expected a ']' with single parameter", peekLine());
+		throw SyntaxError("Expected a ']' with single parameter", prevLine());
 
 	if (consumeType() != TokenType::EQUALS)
-		throw SyntaxError("Invalid function declaration", peekLine());
+		throw SyntaxError("Invalid function declaration", prevLine());
 
 	declInstr = new Declaration(funcToken, paramToken, expression(), m_Environment);
+
+	if (hasMoreInstructions())
+	{
+		delete declInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());
+	}
 
 	return declInstr;
 }
@@ -130,16 +149,48 @@ Instruction* Parser::condition()
 	Expression* condition = logicalOr();
 
 	if (consumeType() != TokenType::THEN)
-		throw SyntaxError("Expected \"then\" after condition", peekLine());
+	{
+		delete condition;
+		throw SyntaxError("Expected \"then\" after condition", prevLine());
+	}
 
-	Instruction* ifTrue = instruction();
+	Instruction* ifTrue = nullptr;
+	try { ifTrue = instruction(); }
+	catch (...) { delete condition; throw; }
+
+	if (!ifTrue)
+	{
+		delete condition;
+		throw SyntaxError("Expected a declaration", prevLine());
+	}
 
 	if (consumeType() != TokenType::ELSE)
-		throw SyntaxError("Expected \"else\"", peekLine());
+	{
+		delete condition;
+		delete ifTrue;
+		throw SyntaxError("Expected \"else\" after declaration", prevLine());
+	}
 
-	Instruction* ifFalse = instruction();
+	Instruction* ifFalse = nullptr;
+	try { ifTrue = instruction(); }
+	catch (...) { delete condition; delete ifTrue; throw; }
 
-	return new Condition(condition, ifTrue, ifFalse, m_Environment);
+	if (!ifFalse)
+	{
+		delete condition;
+		delete ifTrue;
+		throw SyntaxError("Expected a declaration", prevLine());
+	}
+
+	conditionInstr = new Condition(condition, ifTrue, ifFalse, m_Environment);
+
+	if (hasMoreInstructions())
+	{
+		delete conditionInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());
+	}
+
+	return conditionInstr;
 }
 
 Instruction* Parser::loop()
@@ -150,7 +201,10 @@ Instruction* Parser::loop()
 	Expression* condition = logicalOr();
 
 	if (consumeType() != TokenType::DO)
-		throw SyntaxError("Expected \"do\" after condition", peekLine());
+	{
+		delete condition;
+		throw SyntaxError("Expected \"do\" after condition", prevLine());
+	}
 
 	std::vector<Instruction*> instructions;
 	while (peekType() != TokenType::DONE)
@@ -162,14 +216,34 @@ Instruction* Parser::loop()
 		}
 
 		if (peekType() == TokenType::END_OF_FILE)
-			throw SyntaxError("Expected \"done\"", peekLine());
+		{
+			delete condition;
+			for (Instruction* instruction : instructions)
+				delete instruction;
 
-		instructions.push_back(instruction());
+			throw SyntaxError("Expected \"done\"", peekLine());
+		}
+
+		try { instructions.push_back(instruction()); }
+		catch (...)
+		{
+			delete condition;
+			for (Instruction* instruction : instructions)
+				delete instruction;
+
+			throw;
+		}
 	}
 
 	consume();
 
 	loopInstr = new Loop(condition, instructions, m_Environment);
+
+	if (hasMoreInstructions())
+	{
+		delete loopInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());
+	}
 
 	return loopInstr;
 }
@@ -182,8 +256,11 @@ Instruction* Parser::print()
 
 	printInstr = new Print(expression(), m_Environment);
 
-	if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
-		throw SyntaxError("Expected one statement per row only!", peekLine());
+	if (hasMoreInstructions())
+	{
+		delete printInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());
+	}
 
 	return printInstr;
 }
@@ -195,12 +272,15 @@ Instruction* Parser::read()
 	next();
 
 	if (peekType() != TokenType::VARIABLE)
-		throw SyntaxError("Can not apply value to a non variable token!", peekLine());
+		throw SyntaxError("Can not apply value to a non variable token", peekLine());
 
-	readInstr = new Read(&consume(), m_Environment);
+	readInstr = new Read(consume(), m_Environment);
 
-	if (peekType() != TokenType::END_OF_LINE && peekType() != TokenType::ELSE)
-		throw SyntaxError("Expected one statement per row only", peekLine());
+	if (hasMoreInstructions())
+	{
+		delete readInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());
+	}
 
 	return readInstr;
 }
@@ -228,14 +308,25 @@ Expression* Parser::ifElseExpr()
 	Expression* left = logicalOr();
 
 	if (consumeType() != TokenType::THEN)
-		throw SyntaxError("Expected \"then\" after condition", peekLine());
+	{
+		delete left;
+		throw SyntaxError("Expected \"then\" after condition", prevLine());
+	}
 
-	Expression* ifTrue = expression();
+	Expression* ifTrue = nullptr;
+	try { ifTrue = expression(); }
+	catch (...) { delete left; throw; }
 
 	if (consumeType() != TokenType::ELSE)
-		throw SyntaxError("Expected \"else\"", peekLine());
+	{
+		delete left;
+		delete ifTrue;
+		throw SyntaxError("Expected \"else\"", prevLine());
+	}
 
-	Expression* ifFalse = expression();
+	Expression* ifFalse = nullptr;
+	try { ifFalse = expression(); }
+	catch (...) { delete left; delete ifTrue; throw; }
 
 	left = new Ternary(left, ifTrue, ifFalse);
 
@@ -250,12 +341,20 @@ Expression* Parser::ternary()
 	{
 		next();
 		
-		Expression* ifTrue = ternary();
+		Expression* ifTrue = nullptr;
+		try { ifTrue = ternary(); }
+		catch (...) { delete left; throw; }
 
 		if (consumeType() != TokenType::COLON)
-			throw SyntaxError("Expected ':'", peekLine());
+		{
+			delete left;
+			delete ifTrue;
+			throw SyntaxError("Expected ':'", prevLine());
+		}
 
-		Expression* ifFalse = ternary();
+		Expression* ifFalse = nullptr;
+		try { ifFalse = ternary(); }
+		catch (...) { delete left; delete ifTrue; throw; }
 
 		left = new Ternary(left, ifTrue, ifFalse);
 	}
@@ -272,7 +371,11 @@ Expression* Parser::logicalOr()
 	while (type == TokenType::OR)
 	{
 		Token op = consume();
-		Expression* right = logicalAnd();
+		Expression* right = nullptr;
+		
+		try { right = logicalAnd(); }
+		catch (...) { delete left; throw; }
+
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -289,7 +392,9 @@ Expression* Parser::logicalAnd()
 	while (type == TokenType::AND)
 	{
 		Token op = consume();
-		Expression* right = equality();
+		Expression* right = nullptr;
+		try { right = logicalAnd(); }
+		catch (...) { delete left; throw; }
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -306,7 +411,9 @@ Expression* Parser::equality()
 	while (type == TokenType::EQUAL_EQUAL || type == TokenType::NOT_EQUAL)
 	{
 		Token op = consume();
-		Expression* right = comparison();
+		Expression* right = nullptr;
+		try { right = comparison(); }
+		catch (...) { delete left; throw; }
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -324,7 +431,9 @@ Expression* Parser::comparison()
 		type == TokenType::GREATER_THAN || type == TokenType::GREATER_EQUAL)
 	{
 		Token op = consume();
-		Expression* right = arithmetic();
+		Expression* right = nullptr;
+		try { right = arithmetic(); }
+		catch (...) { delete left; throw; }
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -341,7 +450,9 @@ Expression* Parser::arithmetic()
 	while (type == TokenType::PLUS || type == TokenType::MINUS)
 	{
 		Token op = consume();
-		Expression* right = factor();
+		Expression* right = nullptr;
+		try { right = factor(); }
+		catch (...) { delete left; throw; }
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -358,7 +469,9 @@ Expression* Parser::factor()
 	while (type == TokenType::PROD || type == TokenType::DIV || type == TokenType::MOD)
 	{
 		Token op = consume();
-		Expression* right = unary();
+		Expression* right = nullptr;
+		try { right = unary(); }
+		catch (...) { delete left; throw; }
 		type = peekType();
 		left = new Binary(left, op, right);
 	}
@@ -394,18 +507,19 @@ Expression* Parser::primitive()
 		Token name = consume();
 
 		if (consumeType() != TokenType::OPEN_BRACKET)
-			throw SyntaxError("Expected a function call", peekLine());
+			throw SyntaxError("Expected a function call", prevLine());
 
 		Expression* expr = expression();
 
 		if (consumeType() != TokenType::CLOSE_BRACKET)
-			throw SyntaxError("Expected a ']'", peekLine());
+			throw SyntaxError("Expected a ']'", prevLine());
 
 		return new FunctionCaller(name, expr);
 	}
 
-	if (consumeType() == TokenType::OPEN_PAREN)
+	if (peekType() == TokenType::OPEN_PAREN)
 	{
+		next();
 		Expression* expr = expression();
 
 		if (consumeType() == TokenType::CLOSE_PAREN)
@@ -454,7 +568,14 @@ uint64_t Parser::peekLine() const
 	return peek().getLine();
 }
 
-void Parser::log(const char* msg) const
+uint64_t Parser::prevLine() const
 {
-	std::cout << msg << std::endl;
+	return (*(m_CurrToken - 1)).getLine();
+}
+
+bool Parser::hasMoreInstructions() const
+{
+	return peekType() != TokenType::END_OF_LINE && 
+		   peekType() != TokenType::ELSE && 
+		   peekType() != TokenType::DONE;
 }

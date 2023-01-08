@@ -19,9 +19,9 @@ Environment::~Environment()
     }
 }
 
-void Environment::set(const std::string & key, Expression* expr)
+void Environment::set(const std::string& key, Expression* expr)
 {   
-    if (m_Table.find(key) != m_Table.end())
+    if (hasKey(key))
     {
         delete m_Table[key];
         m_Table[key] = expr;
@@ -40,12 +40,15 @@ void Environment::set(const std::string & key, Expression* expr)
 
 void Environment::setOnSelf(const std::string& key, Expression* expr)
 {
+    if (hasKey(key))
+        delete m_Table[key];
+
     m_Table[key] = expr;
 }
 
 bool Environment::contains(const std::string& key) const 
 { 
-    if (m_Table.find(key) == m_Table.end())
+    if (!hasKey(key))
     {
         if (m_PrevEnv) 
             return m_PrevEnv->contains(key);
@@ -57,8 +60,16 @@ bool Environment::contains(const std::string& key) const
 }
 const Expression* Environment::get(const std::string& key) const 
 { 
-    if (m_Table.find(key) == m_Table.end())
-        return m_PrevEnv->get(key);
+    if (!hasKey(key))
+    {
+        if (m_PrevEnv)
+            return m_PrevEnv->get(key);
+    }
 
     return m_Table.at(key); 
+}
+
+bool Environment::hasKey(const std::string& key) const
+{
+    return m_Table.find(key) != m_Table.end();
 }
