@@ -1,4 +1,11 @@
-//#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+//#define DOCTEST_CONFIG_IMPLEMENT
+//#include "doctest.h"
 //
-//#include "TokenizerTests.h"
-//#include "BigIntegerTests.h"
+//int main()
+//{
+//	doctest::Context cont;
+//
+//	int res = cont.run();
+//
+//	return res;
+//}
