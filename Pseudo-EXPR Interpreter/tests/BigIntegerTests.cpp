@@ -74,12 +74,12 @@ TEST_CASE("Relational operators")
         std::vector<BigInteger> bigNums =
         {
             BigInteger("0"),
-            BigInteger("2182737621234"),
+            BigInteger("21827372312"),
             BigInteger("435526788322937"),
-            BigInteger("455637772883892"),
-            BigInteger("778828837747666"),
-            BigInteger("838487388437847389"),
-            BigInteger("1234567892361627372819002399712")
+            BigInteger("455632235883892"),
+            BigInteger("881182837643778"),
+            BigInteger("819282777346737892"),
+            BigInteger("1111222555263662163812734")
         };
 
         for (size_t i = 0; i < bigNums.size(); i++) {

@@ -4,10 +4,10 @@
 
 #include "Interpreter/Interpreter.h"
 
-//#define DOCTEST_CONFIG_IMPLEMENT
-//#include "../tests/doctest.h"
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "../tests/doctest.h"
 
-//#define TESTING
+#define TESTING
 
 #ifndef TESTING
 

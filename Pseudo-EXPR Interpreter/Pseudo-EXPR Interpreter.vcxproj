@@ -151,6 +151,21 @@
     <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\Token\Token.cpp" />
     <ClCompile Include="src\Token\Tokenizer.cpp" />
+    <ClCompile Include="tests\BigIntegerTests.cpp" />
+    <ClCompile Include="tests\EnvironmentTests.cpp" />
+    <ClCompile Include="tests\Expressions\BinaryTests.cpp" />
+    <ClCompile Include="tests\Expressions\ExpressionTests.cpp" />
+    <ClCompile Include="tests\Expressions\TernaryTests.cpp" />
+    <ClCompile Include="tests\Expressions\UnaryTests.cpp" />
+    <ClCompile Include="tests\Instructions\AssignmentTests.cpp" />
+    <ClCompile Include="tests\Instructions\ConditionTests.cpp" />
+    <ClCompile Include="tests\Instructions\FunctionTests.cpp" />
+    <ClCompile Include="tests\Instructions\LoopTests.cpp" />
+    <ClCompile Include="tests\Instructions\PrintTests.cpp" />
+    <ClCompile Include="tests\Instructions\ReadTests.cpp" />
+    <ClCompile Include="tests\InterpreterTests.cpp" />
+    <ClCompile Include="tests\ParserTests.cpp" />
+    <ClCompile Include="tests\TokenizerTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Interpreter\Interpreter.h" />
