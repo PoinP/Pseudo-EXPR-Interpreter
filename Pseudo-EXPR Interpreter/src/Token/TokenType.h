@@ -2,6 +2,7 @@
 
 #define TOKEN_TYPE_H
 
+/// All of the known token types to the interpreter
 enum class TokenType
 {
 	EQUALS, PLUS, MINUS, PROD, DIV, MOD,
