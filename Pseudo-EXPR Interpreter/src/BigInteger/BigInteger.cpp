@@ -30,6 +30,9 @@ BigInteger::BigInteger(uint64_t number)
 
 BigInteger::BigInteger(const char* strNumber)
 {
+	if(strNumber[0] == '-')
+		throw std::invalid_argument("Negative numbers are not supported!");
+
 	uint8_t lengthCounter = BASE_LENGTH;
 	char* rawDigits = new char[lengthCounter];
 	rawDigits[--lengthCounter] = '\0';
@@ -39,7 +42,7 @@ BigInteger::BigInteger(const char* strNumber)
 	for (int64_t i = strLength - 1; i >= 0; --i)
 	{
 		if (!isDigit(strNumber[i]))
-			throw std::invalid_argument("The string number is invalid!");
+			throw std::invalid_argument("Invalid number input!");
 
 		rawDigits[--lengthCounter] = strNumber[i];
 

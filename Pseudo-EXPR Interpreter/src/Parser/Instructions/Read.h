@@ -17,7 +17,8 @@ public:
 			env = m_Env;
 
 		BigInteger value;
-		std::cin >> value;
+		try { std::cin >> value; }
+		catch (const std::invalid_argument& ex) { throw RunTimeError(ex.what()); }
 		env->set(m_Var.getIdentifier(), new Primitive(value));
 	}
 

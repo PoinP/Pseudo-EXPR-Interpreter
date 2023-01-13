@@ -1,0 +1,16 @@
+read n
+
+fib0 = 1
+fib1 = 1
+
+i = 2
+while i < n do
+    tempfib = fib1
+    fib1 = fib0 + fib1
+    fib0 = tempfib
+    i = i + 1
+done
+
+fib1 = n == 0 ? 0 : fib1
+
+print fib1

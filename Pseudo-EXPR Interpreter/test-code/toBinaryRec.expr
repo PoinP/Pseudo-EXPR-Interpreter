@@ -1,0 +1,7 @@
+// Converts a number from decimal to binary
+
+TOBINARY[x] = if x > 0 then (x % 2 + TOBINARY[x / 2] * 10) else 0
+
+read decimal
+
+print TOBINARY[decimal]

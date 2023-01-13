@@ -156,7 +156,7 @@ TEST_CASE("Random Arithmetic Operations")
     std::random_device gen;
     std::uniform_int_distribution<uint64_t> distr((0), (UINT32_MAX));
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 500; i++)
     {
         uint64_t num1 = distr(gen);
         uint64_t num2 = distr(gen);

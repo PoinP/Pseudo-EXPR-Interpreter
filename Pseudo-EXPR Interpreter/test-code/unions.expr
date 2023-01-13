@@ -1,0 +1,18 @@
+// This is Task 17 from the following repo
+// https://github.com/ddimitrov-fmi/up-2022-2023/blob/master/practicum_inf/group%203/3.%20Loops/tasks.md
+
+read starta
+read enda
+read startb 
+read endb
+read number
+
+inunion = (starta <= number and number <= enda) or (startb <= number and number <= endb)
+inintersection = number <= enda and number >= startb
+indifference = !inintersection and (number >= starta and number <= enda)
+insingleset = !inintersection and inunion
+
+print inunion
+print inintersection
+print indifference
+print insingleset

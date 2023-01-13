@@ -1,0 +1,27 @@
+// This is Task 3 of Informatics' first test
+// https://github.com/ddimitrov-fmi/up-2022-2023/blob/master/practicum_inf/group%203/0.%20Tests/firstTest.md
+
+read uservalue
+
+step = 1
+currnum = 0
+reversednum = 0
+
+while uservalue > 0 do 
+	currnum = currnum + (uservalue % 10) * step
+
+	numcopy = currnum
+
+	while numcopy > 0 do
+		reversednum = reversednum * 10 + (numcopy % 10)
+		numcopy = numcopy / 10
+	done
+
+	ispalindorm = reversednum == currnum
+
+	if ispalindorm then print currnum else currnum = currnum
+
+	reversednum = 0
+	step = step * 10
+	uservalue = uservalue / 10
+done

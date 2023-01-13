@@ -172,7 +172,7 @@ Instruction* Parser::condition()
 	}
 
 	Instruction* ifFalse = nullptr;
-	try { ifTrue = instruction(); }
+	try { ifFalse = instruction(); }
 	catch (...) { delete condition; delete ifTrue; throw; }
 
 	if (!ifFalse)

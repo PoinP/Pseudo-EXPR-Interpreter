@@ -8,7 +8,7 @@
 class Interpreter
 {
 public:
-	Interpreter(std::string& srcCode);
+	Interpreter(const std::string& srcCode);
 	~Interpreter();
 
 	void interpret() const;

@@ -133,6 +133,9 @@ TEST_CASE("Function Tests")
 		instrs[1]->run();
 
 		CHECK(env.get("x")->evaluate(&env) == 40);
+
+		for (Instruction* i : instrs)
+			delete i;
 	}
 
 	SUBCASE("Wrong Declarations")
@@ -275,6 +278,9 @@ TEST_CASE("Condition(If-Else) Tests")
 
 			instrs[0]->run();
 			CHECK(env.get("x")->evaluate(&env) == 1);
+
+			for (Instruction* i : instrs)
+				delete i;
 		}
 
 		SUBCASE("When False")
@@ -289,6 +295,9 @@ TEST_CASE("Condition(If-Else) Tests")
 
 			instrs[0]->run();
 			CHECK(env.get("x")->evaluate(&env) == 0);
+
+			for (Instruction* i : instrs)
+				delete i;
 		}
 	}
 
@@ -457,6 +466,9 @@ TEST_CASE("Loop Tests")
 
 		CHECK(env.get("x")->evaluate(&env) == 5);
 		CHECK(env.get("y")->evaluate(&env) == 50);
+
+		for (Instruction* i : instrs)
+			delete i;
 	}
 
 	SUBCASE("Invalid Condition")

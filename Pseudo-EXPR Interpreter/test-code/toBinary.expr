@@ -1,0 +1,15 @@
+// Converts a number from decimal to binary
+
+read decimal
+
+binary = 0
+step = 1
+
+while decimal > 0 do
+    lastdigit = decimal % 2
+    binary = lastdigit * step + binary
+    step = step * 10
+    decimal = decimal / 2
+done
+
+print binary

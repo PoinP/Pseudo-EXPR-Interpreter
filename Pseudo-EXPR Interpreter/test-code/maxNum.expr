@@ -1,0 +1,19 @@
+// Reads a value n from the console and
+// expects the user to enter n values
+
+// After enetering n values, the console prints
+// the biggest value that the user entered
+
+read n
+
+i = 0
+
+max = 0
+while i < n do
+    read num
+    max = if num > max then num else max
+
+    i = i + 1
+done
+
+print max

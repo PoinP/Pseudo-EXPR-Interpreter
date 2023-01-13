@@ -80,3 +80,211 @@ TEST_CASE("Base Parsing")
 			CHECK_THROWS_WITH_AS(i->run(), "Run-Time Error: { Division by zero } at line 1", RunTimeError);
 	}
 }
+
+TEST_CASE("Binary Operator Parsing")
+{
+	SUBCASE("Invalid Expression")
+	{
+		SUBCASE("Logic Or")
+		{
+			Tokenizer lexer("x = 1 or print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Logic And")
+		{
+			Tokenizer lexer("x = 1 and print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Equality")
+		{
+			Tokenizer lexer("x = 1 == print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Non Equality")
+		{
+			Tokenizer lexer("x = 1 != print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Comparison")
+		{
+			Tokenizer lexer("x = 1 > print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Arithmetic")
+		{
+			Tokenizer lexer("x = 1 + print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+
+		SUBCASE("Factor")
+		{
+			Tokenizer lexer("x = 1 * print 1");
+			Environment env;
+			Parser parser(lexer.tokenize(), &env);
+			CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+		}
+	}
+}
+
+TEST_CASE("Ternary Operator Parsing")
+{
+	SUBCASE("Correct parsing")
+	{
+		Tokenizer lexer("x = 1 > 0 ? 1 : 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse());
+	}
+
+	SUBCASE("Invalid Condition")
+	{
+		Tokenizer lexer("x = print 2 ? 1 : 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Invalid If True Expression")
+	{
+		Tokenizer lexer("x = 1 > 0 ? print 1 : 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Invalid If False Expression")
+	{
+		Tokenizer lexer("x = 1 > 0 ? 1 : print 3");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Missing Colon")
+	{
+		Tokenizer lexer("x = 1 > 0 ? 1 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected ':' } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Chaining")
+	{
+		Tokenizer lexer("x = 1 > 0 ? 1 < 0 ? 2 : 1 : 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse());
+	}
+}
+
+TEST_CASE("If Expression Parsing")
+{
+	SUBCASE("Correct parsing")
+	{
+		Tokenizer lexer("x = if 1 > 0 then 1 else 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse());
+	}
+
+	SUBCASE("Invalid Condition")
+	{
+		Tokenizer lexer("x = if print 2 then 1 else 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Invalid If True Expression")
+	{
+		Tokenizer lexer("x = if 1 > 0 then print 1 else 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Invalid If False Expression")
+	{
+		Tokenizer lexer("x = if 1 > 0 then 1 else print 3");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Missing 'then'")
+	{
+		Tokenizer lexer("x = if 1 > 0 1 else 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected \"then\" after condition } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Missing 'else'")
+	{
+		Tokenizer lexer("x = if 1 > 0 then 1 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected \"else\" } at line 1", SyntaxError);
+	}
+
+	SUBCASE("Chaining expressions")
+	{
+		Tokenizer lexer("x = if 1 > 0 then if 1 < 0 then 2 else 1 else 0");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse()[0]->run());
+		CHECK(env.get("x")->evaluate(&env) == 1);
+	}
+}
+
+TEST_CASE("Invalid Primitive Parsing")
+{
+	SUBCASE("Functions")
+	{
+		Tokenizer lexer("x = FUNC");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected a function call } at line 1", SyntaxError);
+
+		lexer = Tokenizer("x = FUNC[");
+		parser = Parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected an expression } at line 1", SyntaxError);
+
+		lexer = Tokenizer("x = FUNC[5");
+		parser = Parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected a ']' } at line 1", SyntaxError);
+
+		lexer = Tokenizer("x = FUNC[5]");
+		parser = Parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse());
+	}
+
+	SUBCASE("Grouping")
+	{
+		Tokenizer lexer("x = (1 + 5");
+		Environment env;
+		Parser parser(lexer.tokenize(), &env);
+		CHECK_THROWS_WITH_AS(parser.parse(), "Syntax Error: { Expected a ')' } at line 1", SyntaxError);
+
+		lexer = Tokenizer("x = (1 + 5)");
+		parser = Parser(lexer.tokenize(), &env);
+		CHECK_NOTHROW(parser.parse());
+	}
+}

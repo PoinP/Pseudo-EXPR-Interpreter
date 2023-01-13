@@ -1,0 +1,12 @@
+// Sums all of the values entered
+// until the user enters a zero
+
+sum = 0
+read userinput
+
+while userinput != 0 do
+    sum = sum + userinput
+    read userinput
+done
+
+print sum

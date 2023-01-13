@@ -7,6 +7,10 @@
 class RunTimeError : public Error
 {
 public:
+	RunTimeError(const char* what)
+		: Error("Run-Time Error: { " + std::string(what) + " }")
+	{}
+
 	RunTimeError(const char* what, unsigned long long line)
 		: Error ("Run-Time Error: { " + std::string(what) + " } at line " + std::to_string(line))
 	{}

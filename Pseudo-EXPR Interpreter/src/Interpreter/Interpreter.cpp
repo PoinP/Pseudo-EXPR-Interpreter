@@ -5,7 +5,7 @@
 #include "../Errors/RunTimeError.h"
 #include "../Errors/SyntaxError.h"
 
-Interpreter::Interpreter(std::string& srcCode)
+Interpreter::Interpreter(const std::string& srcCode)
 	: m_Status(true)
 {
 	Tokenizer lexer(srcCode);

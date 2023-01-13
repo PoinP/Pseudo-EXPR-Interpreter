@@ -1,0 +1,5 @@
+FIB[x] = if x == 0 then 0 else if x < 2 then 1 else FIB[x - 1] + FIB[x - 2]
+
+read fib
+
+print FIB[fib]

@@ -296,11 +296,11 @@ TEST_CASE("Unary Tests")
 
 TEST_CASE("Ternary Tests")
 {
-	Expression* expr = nullptr;
-	Environment env;
-
 	SUBCASE("Correct Evaluations")
 	{
+		Expression* expr = nullptr;
+		Environment env;
+
 		Expression* cond = new Primitive(1);
 		Expression* ifTrue = new Primitive(10);
 		Expression* ifFalse = new Primitive(20);
@@ -318,9 +318,47 @@ TEST_CASE("Ternary Tests")
 		expr = new Ternary(cond, ifTrue, ifFalse);
 
 		CHECK(expr->evaluate(&env) == 20);
+
+		delete expr;
 	}
 
-	SUBCASE("")
+	SUBCASE("Chaining operators")
+	{
+		Tokenizer t("x = 10 > 5 ? 3 < 1 ? 100 : 50 : 60");
+		Environment env;
+		Parser p(t.getTokens(), &env);
 
-	delete expr;
+		p.parse()[0]->run();
+		CHECK(env.get("x")->evaluate(&env) == 50);
+
+		t = Tokenizer("x = 10 < 5 ? 3 < 1 ? 100 : 50 : 60");
+		p = Parser(t.tokenize(), &env);
+		p.parse()[0]->run();
+
+		CHECK(env.get("x")->evaluate(&env) == 60);
+
+		t = Tokenizer("x = 10 > 5 ? 3 > 1 ? 100 : 50 : 60");
+		p = Parser(t.tokenize(), &env);
+		p.parse()[0]->run();
+
+		CHECK(env.get("x")->evaluate(&env) == 100);
+	}
+}
+
+TEST_CASE("Usage Of A Variable Which Is Not Initalized")
+{
+	Tokenizer t("x = y");
+	Environment env;
+	Parser p(t.getTokens(), &env);
+
+	CHECK_THROWS_WITH_AS(p.parse()[0]->run(), "Run-Time Error: { The variable \"y\" is not initalized } at line 1", RunTimeError);
+}
+
+TEST_CASE("Usage Of An Undefined Function")
+{
+	Tokenizer t("x = FUNC[x]");
+	Environment env;
+	Parser p(t.getTokens(), &env);
+
+	CHECK_THROWS_WITH_AS(p.parse()[0]->run(), "Run-Time Error: { Function \"FUNC\" undefined } at line 1", RunTimeError);
 }

@@ -1,0 +1,5 @@
+read num
+
+FACT[n] = if n <= 1 then 1 else n * FACT[n - 1]
+
+print FACT[num]

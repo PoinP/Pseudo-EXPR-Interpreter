@@ -20,7 +20,6 @@ private:
 
 	Expression& operator=(const Expression& other) = delete;
 	Expression& operator=(Expression&& other) = delete;
-
 };
 
 #endif // !EXPRESSION_H

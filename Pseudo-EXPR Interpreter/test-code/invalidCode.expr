@@ -1,0 +1,21 @@
+/*
+This is a multi-lined comment
+It is very cool!
+*/
+
+inavlidVarName = 2
+
+InvalidFuncName[x] = x + 10
+
+invalidName[varName] = varName * 10
+
+expr
+
+i = nonexistingvar
+
+if 1 > 2 then print 99 // no else is invalid
+
+while print myVar do
+
+done // it doesn't get detected because while does not get parsed correctly beacuse of an error
+

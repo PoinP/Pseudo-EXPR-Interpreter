@@ -1,0 +1,6 @@
+read num
+
+ISPOWEROFTWO[num] = if num == 1 then 1 else num % 2 == 0 and ISPOWEROFTWO[num / 2]
+ispoweroftwo = ISPOWEROFTWO[num]
+
+print ispoweroftwo
