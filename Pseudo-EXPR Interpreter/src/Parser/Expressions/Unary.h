@@ -17,6 +17,7 @@ public:
 		: m_Operator(op), m_Right(right)
 	{}
 
+	/// Deletes its expression
 	~Unary()
 	{
 		delete m_Right;

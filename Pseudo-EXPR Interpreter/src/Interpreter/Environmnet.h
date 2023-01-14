@@ -21,7 +21,7 @@ public:
 	/// Constructs a sub environment(or a parent) of prevEnv
 	/// @param prevEnv The environment that encapsulates the current one
 	Environment(Environment* prevEnv);
-	/// Used to delete the allocated memory of the expressions bound to an identifier
+	/// Used to delete the allocated memory of the expressions bound to the identifiers
 	~Environment();
 
 	/// Sets and expression to a specific key
