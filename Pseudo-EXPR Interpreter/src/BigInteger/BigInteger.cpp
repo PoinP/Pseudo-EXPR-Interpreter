@@ -450,8 +450,8 @@ std::istream& operator>>(std::istream& input, BigInteger& bigInt)
 	return input;
 }
 
-std::ostream& operator<<(std::ostream& input, const BigInteger& bigInt)
+std::ostream& operator<<(std::ostream& output, const BigInteger& bigInt)
 {
-	input << static_cast<std::string>(bigInt);
-	return input;
+	output << static_cast<std::string>(bigInt);
+	return output;
 }
