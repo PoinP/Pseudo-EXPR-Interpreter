@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>BigInteger.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "BigInteger.h"
+#include &lt;stdexcept&gt;
+
+using RadixSize = BigInteger::RadixSize;
+
+BigInteger::BigInteger()
+<span style = "background-color:#dfd">{
+	m_Numbers.push_back(0);
+}</span>
+
+BigInteger::BigInteger(int32_t number)
+<span style = "background-color:#dfd">{
+	if (number &lt; 0)
+		throw std::invalid_argument("Negative values are not supported!");</span>
+
+<span style = "background-color:#dfd">	*this = (uint64_t)number;
+}</span>
+
+BigInteger::BigInteger(uint64_t number)
+<span style = "background-color:#dfd">{
+	if (number == 0)
+		m_Numbers.push_back(0);</span>
+
+<span style = "background-color:#dfd">	while (number &gt; 0)</span>
+	{
+<span style = "background-color:#dfd">		m_Numbers.push_back(number % BASE_NUM);
+		number /= BASE_NUM;
+	}
+}</span>
+
+BigInteger::BigInteger(const char* strNumber)
+<span style = "background-color:#dfd">{
+	if(strNumber[0] == '-')</span>
+<span style = "background-color:#fdd">		throw std::invalid_argument("Negative numbers are not supported!");</span>
+
+<span style = "background-color:#dfd">	uint8_t lengthCounter = BASE_LENGTH;
+	char* rawDigits = new char[lengthCounter];
+	rawDigits[--lengthCounter] = '\0';</span>
+
+<span style = "background-color:#dfd">	size_t strLength = strlen(strNumber);</span>
+
+<span style = "background-color:#dfd">	for (int64_t i = strLength - 1; i &gt;= 0; --i)</span>
+	{
+<span style = "background-color:#dfd">		if (!isDigit(strNumber[i]))
+			throw std::invalid_argument("Invalid number input!");</span>
+
+<span style = "background-color:#dfd">		rawDigits[--lengthCounter] = strNumber[i];</span>
+
+<span style = "background-color:#dfd">		if (i == 0)</span>
+		{
+<span style = "background-color:#dfd">			m_Numbers.push_back(toNumber(rawDigits + lengthCounter));
+			break;</span>
+		}
+
+<span style = "background-color:#dfd">		if (lengthCounter &lt;= 0)</span>
+		{
+<span style = "background-color:#dfd">			lengthCounter = BASE_LENGTH - 1;
+			m_Numbers.push_back(toNumber(rawDigits));</span>
+		}
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	delete[] rawDigits;
+}</span>
+
+BigInteger::BigInteger(const std::string&amp; strNumber)
+<span style = "background-color:#dfd">	: BigInteger(strNumber.c_str())
+{
+}</span>
+
+bool operator==(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	if (lhs.size() != rhs.size())
+		return false;</span>
+
+<span style = "background-color:#dfd">	for (size_t i = 0; i &lt; lhs.size(); i++)</span>
+	{
+<span style = "background-color:#dfd">		if (lhs[i] != rhs[i])
+			return false;
+	}</span>
+
+<span style = "background-color:#dfd">	return true;
+}</span>
+
+bool operator!=(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	return !(lhs == rhs);
+}</span>
+
+bool operator&gt;(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	if (lhs.size() &gt; rhs.size())
+		return true;</span>
+
+<span style = "background-color:#dfd">	if (lhs.size() &lt; rhs.size())
+		return false;</span>
+
+<span style = "background-color:#dfd">	for (int64_t i = lhs.size() - 1; i &gt;= 0; --i)</span>
+	{
+<span style = "background-color:#dfd">		if (lhs[i] != rhs[i])
+			return lhs[i] &gt; rhs[i];
+	}</span>
+
+<span style = "background-color:#dfd">	return false;
+}</span>
+
+bool operator&gt;=(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	return !(lhs &lt; rhs);
+}</span>
+
+bool operator&lt;(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	return !(lhs &gt; rhs) &amp;&amp; lhs != rhs;
+}</span>
+
+bool operator&lt;=(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	return !(lhs &gt; rhs);
+}</span>
+
+BigInteger operator+(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	const BigInteger* lhsPtr = &amp;lhs;
+	const BigInteger* rhsPtr = &amp;rhs;</span>
+
+<span style = "background-color:#dfd">	if (lhs &gt; rhs)
+		std::swap(lhsPtr, rhsPtr);</span>
+
+<span style = "background-color:#dfd">	BigInteger result = *rhsPtr;</span>
+
+	size_t i;
+<span style = "background-color:#dfd">	for (i = 0; i &lt; lhsPtr-&gt;size(); ++i)</span>
+	{
+<span style = "background-color:#dfd">		result[i] += lhsPtr-&gt;operator[](i);</span>
+
+<span style = "background-color:#dfd">		if (result[i] &gt;= BigInteger::BASE_NUM)</span>
+		{
+<span style = "background-color:#dfd">			size_t j = i;</span>
+			// Compensate for overflowing radix
+<span style = "background-color:#dfd">			while (result[j] &gt;= BigInteger::BASE_NUM)</span>
+			{
+<span style = "background-color:#dfd">				result[j] -= BigInteger::BASE_NUM;</span>
+
+<span style = "background-color:#dfd">				if (j + 1 &lt; result.size())
+					result[j + 1] += 1;</span>
+				else
+<span style = "background-color:#dfd">					result.pushBack(1);</span>
+
+<span style = "background-color:#dfd">				j++;
+			}</span>
+
+		}
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	return result;
+}</span>
+
+BigInteger operator-(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	if (lhs &lt; rhs)
+		throw std::underflow_error("Negative numbers are not supported!");</span>
+
+<span style = "background-color:#dfd">	BigInteger result = lhs;</span>
+
+<span style = "background-color:#dfd">	for (size_t i = 0; i &lt; rhs.size(); i++)</span>
+	{
+<span style = "background-color:#dfd">		if (result[i] &lt; rhs[i])</span>
+		{
+<span style = "background-color:#dfd">			result[i] += BigInteger::BASE_NUM - rhs[i];</span>
+
+<span style = "background-color:#dfd">			size_t j = i + 1;
+			while (result[j] == 0)</span>
+			{
+<span style = "background-color:#dfd">				result[j++] = BigInteger::BASE_NUM - 1;
+			}</span>
+
+<span style = "background-color:#dfd">			result[j] -= 1;</span>
+
+<span style = "background-color:#dfd">			continue;</span>
+		}
+
+<span style = "background-color:#dfd">		result[i] -= rhs[i];
+	}</span>
+
+<span style = "background-color:#dfd">	while (result.size() &gt; 1 &amp;&amp; result.back() == 0)
+		result.popBack();</span>
+
+<span style = "background-color:#dfd">	return result;
+}</span>
+
+BigInteger operator*(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	if (lhs.size() == 1)</span>
+	{
+<span style = "background-color:#dfd">		if (lhs == "0") return BigInteger();
+		if (lhs == 1) return BigInteger(rhs);</span>
+	}
+
+<span style = "background-color:#dfd">	if (rhs.size() == 1)</span>
+	{
+<span style = "background-color:#dfd">		if (rhs == "0") return BigInteger();
+		if (rhs == 1) return BigInteger(lhs);</span>
+	}
+
+<span style = "background-color:#dfd">	const BigInteger* lhsPtr = &amp;lhs;
+	const BigInteger* rhsPtr = &amp;rhs;</span>
+
+<span style = "background-color:#dfd">	if (lhs &gt; rhs)
+		std::swap(lhsPtr, rhsPtr);</span>
+
+<span style = "background-color:#dfd">	BigInteger* products = new BigInteger[lhsPtr-&gt;size()];</span>
+
+	// j + i -&gt; i is the offset that shows when mutiplying numbers
+
+<span style = "background-color:#dfd">	for (size_t i = 0; i &lt; lhsPtr-&gt;size(); i++)</span>
+	{
+<span style = "background-color:#dfd">		products[i] = BigInteger().setSize(rhsPtr-&gt;size() + i);</span>
+
+<span style = "background-color:#dfd">		for (size_t j = 0; j &lt; rhsPtr-&gt;size(); j++)</span>
+		{
+<span style = "background-color:#dfd">			products[i][j + i] += lhsPtr-&gt;operator[](i) * rhsPtr-&gt;operator[](j);</span>
+
+<span style = "background-color:#dfd">			if (products[i][j + i] &gt;= BigInteger::BASE_NUM)</span>
+			{
+<span style = "background-color:#dfd">				RadixSize carry = products[i][j + i] / BigInteger::BASE_NUM;
+				products[i][j + i] %= BigInteger::BASE_NUM;</span>
+
+<span style = "background-color:#dfd">				if (j + i + 1 &lt; products[i].size())
+					products[i][j + i + 1] += carry;</span>
+				else
+<span style = "background-color:#dfd">					products[i].pushBack(carry);</span>
+			}
+<span style = "background-color:#dfd">		}
+	}</span>
+
+<span style = "background-color:#dfd">	BigInteger result;</span>
+
+<span style = "background-color:#dfd">	for (size_t i = 0; i &lt; lhsPtr-&gt;size(); i++)</span>
+	{
+<span style = "background-color:#dfd">		result = result + products[i];
+	}</span>
+
+<span style = "background-color:#dfd">	delete[] products;
+	return result;
+}</span>
+
+BigInteger operator/(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	BigInteger quotient;
+	BigInteger reminder;
+	BigInteger::divide(lhs, rhs, quotient, reminder);</span>
+
+<span style = "background-color:#dfd">	return quotient;
+}</span>
+
+BigInteger operator%(const BigInteger&amp; lhs, const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	BigInteger quotient;
+	BigInteger reminder;
+	BigInteger::divide(lhs, rhs, quotient, reminder);</span>
+
+<span style = "background-color:#dfd">	return reminder;
+}</span>
+
+BigInteger&amp; BigInteger::operator++()
+<span style = "background-color:#dfd">{
+	*this = *this + 1;
+	return *this;
+}</span>
+
+BigInteger BigInteger::operator++(int)
+<span style = "background-color:#dfd">{
+	BigInteger oldValue = *this;
+	++(*this);
+	return oldValue;
+}</span>
+
+BigInteger&amp; BigInteger::operator--()
+<span style = "background-color:#dfd">{
+	*this = *this - 1;
+	return *this;
+}</span>
+
+BigInteger BigInteger::operator--(int)
+<span style = "background-color:#dfd">{
+	BigInteger oldValue = *this;
+	--(*this);
+	return oldValue;
+}</span>
+
+BigInteger&amp; BigInteger::operator+=(const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	*this = *this + rhs;
+	return *this;
+}</span>
+
+BigInteger&amp; BigInteger::operator-=(const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	*this = *this - rhs;
+	return *this;
+}</span>
+
+BigInteger&amp; BigInteger::operator*=(const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	*this = *this * rhs;
+	return *this;
+}</span>
+
+BigInteger&amp; BigInteger::operator/=(const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	*this = *this / rhs;
+	return *this;
+}</span>
+
+BigInteger&amp; BigInteger::operator%=(const BigInteger&amp; rhs)
+<span style = "background-color:#dfd">{
+	*this = *this % rhs;
+	return *this;
+}</span>
+
+void BigInteger::divide(BigInteger lhs, BigInteger rhs, BigInteger&amp; quotient, BigInteger&amp; reminder)
+<span style = "background-color:#dfd">{
+	if (rhs == "0")
+		throw std::runtime_error("Division by zero!");</span>
+
+<span style = "background-color:#dfd">	if (lhs == "0")</span>
+	{
+<span style = "background-color:#dfd">		quotient = "0";
+		reminder = "0";
+		return;</span>
+	}
+
+<span style = "background-color:#dfd">	if (lhs &lt; rhs)</span>
+	{
+<span style = "background-color:#dfd">		quotient = "0";
+		reminder = lhs;
+		return;</span>
+	}
+
+<span style = "background-color:#dfd">	if (lhs == rhs)</span>
+	{
+<span style = "background-color:#dfd">		quotient = 1;
+		reminder = "0";
+		return;</span>
+	}
+
+<span style = "background-color:#dfd">	if (lhs.size() == 1 &amp;&amp; rhs.size() == 1)</span>
+	{
+<span style = "background-color:#dfd">		quotient = lhs[0] / rhs[0];
+		reminder = lhs[0] % rhs[0];
+		return;</span>
+	}
+
+<span style = "background-color:#dfd">	quotient.popBack();
+	reminder.popBack();</span>
+
+<span style = "background-color:#dfd">	reminder.insert(reminder.begin(), lhs.end() - rhs.size(), lhs.end());</span>
+
+<span style = "background-color:#dfd">	int64_t lhsIndex = lhs.size() - rhs.size() - 1;
+	while (reminder &lt; rhs)</span>
+	{
+<span style = "background-color:#dfd">		reminder.pushFront(lhs[lhsIndex--]);
+	}</span>
+
+<span style = "background-color:#dfd">	while (lhsIndex &gt;= -1)</span>
+	{
+<span style = "background-color:#dfd">		int subtractions = 0;
+		while (reminder &gt;= rhs)</span>
+		{
+<span style = "background-color:#dfd">			reminder -= rhs;
+			subtractions++;
+		}</span>
+
+<span style = "background-color:#dfd">		if (subtractions != 0)</span>
+		{
+<span style = "background-color:#dfd">			quotient.pushFront(subtractions);
+			subtractions = 0;</span>
+		}
+
+<span style = "background-color:#dfd">		if (lhsIndex == -1)
+			break;</span>
+
+<span style = "background-color:#dfd">		while (reminder &lt; rhs &amp;&amp; lhsIndex &gt;= 0)</span>
+		{
+<span style = "background-color:#dfd">			reminder.pushFront(lhs[lhsIndex--]);</span>
+
+<span style = "background-color:#dfd">			if (reminder.size() &gt; 1 &amp;&amp; reminder.back() == 0)
+				reminder.popBack();</span>
+
+<span style = "background-color:#dfd">			if (reminder &lt; rhs)
+				quotient.pushFront(subtractions);
+		}
+	}
+}</span>
+
+bool BigInteger::isDigit(char c) const
+<span style = "background-color:#dfd">{
+	return c &gt;= '0' &amp;&amp; c &lt;= '9';
+}</span>
+
+std::string BigInteger::convertToString() const
+<span style = "background-color:#dfd">{
+	std::string bigInt;
+	std::string currNum;</span>
+	size_t baseCounter;
+
+<span style = "background-color:#dfd">	bigInt = std::to_string(m_Numbers.back());</span>
+
+<span style = "background-color:#dfd">	for (int64_t i = m_Numbers.size() - 2; i &gt;= 0; --i)</span>
+	{
+<span style = "background-color:#dfd">		baseCounter = BASE_LENGTH - 1;
+		currNum = std::to_string(m_Numbers[i]);
+		baseCounter -= currNum.length();</span>
+
+<span style = "background-color:#dfd">		for (int j = 0; j &lt; baseCounter; ++j)</span>
+		{
+<span style = "background-color:#dfd">			bigInt.push_back('0');
+		}</span>
+
+<span style = "background-color:#dfd">		bigInt += currNum;
+	}</span>
+
+<span style = "background-color:#dfd">	return bigInt;
+}</span>
+
+RadixSize BigInteger::toNumber(const char* numStr) const
+<span style = "background-color:#dfd">{
+	RadixSize number = 0;</span>
+
+<span style = "background-color:#dfd">	while (*numStr != '\0')</span>
+	{
+<span style = "background-color:#dfd">		number = number * 10 + *numStr - '0';
+		numStr++;
+	}</span>
+
+<span style = "background-color:#dfd">	return number;
+}</span>
+
+BigInteger BigInteger::setSize(size_t initalSize)
+<span style = "background-color:#dfd">{
+	m_Numbers = std::deque&lt;RadixSize&gt;(initalSize, 0);
+	return *this;
+}</span>
+
+std::istream&amp; operator&gt;&gt;(std::istream&amp; input, BigInteger&amp; bigInt)
+<span style = "background-color:#fdd">{
+	std::string number;
+	input &gt;&gt; number;
+	bigInt = number;
+	return input;
+}</span>
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; output, const BigInteger&amp; bigInt)
+<span style = "background-color:#fdd">{
+	output &lt;&lt; static_cast&lt;std::string&gt;(bigInt);
+	return output;
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

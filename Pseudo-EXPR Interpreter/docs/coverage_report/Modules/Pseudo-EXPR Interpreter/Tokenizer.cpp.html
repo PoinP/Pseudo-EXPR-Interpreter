@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>Tokenizer.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "Tokenizer.h"
+
+#include "../Errors/SyntaxError.h"
+
+Tokenizer::Tokenizer(const std::string&amp; srcCode)
+<span style = "background-color:#dfd">    : m_Src(srcCode), m_Iterator(0), m_CurrLine(1)
+{
+}</span>
+
+std::vector&lt;Token&gt; Tokenizer::tokenize()
+<span style = "background-color:#dfd">{
+    while (peek() != '\0')</span>
+    {
+        try
+        {
+<span style = "background-color:#dfd">            collectTokens();</span>
+        }
+        catch (const SyntaxError&amp;)
+<span style = "background-color:#dfd">        {
+            next();
+            throw;</span>
+<span style = "background-color:#fdd">        }</span>
+<span style = "background-color:#dfd">    }</span>
+
+<span style = "background-color:#dfd">    addToken(TokenType::END_OF_LINE);
+    addToken(TokenType::END_OF_FILE);</span>
+
+<span style = "background-color:#dfd">    return m_Tokens;
+}</span>
+
+std::vector&lt;Token&gt; Tokenizer::getTokens()
+<span style = "background-color:#dfd">{
+    if (m_Tokens.empty())
+        return tokenize();</span>
+
+<span style = "background-color:#fdd">    return m_Tokens;</span>
+<span style = "background-color:#dfd">}</span>
+
+bool Tokenizer::isAtEnd() const
+<span style = "background-color:#dfd">{
+    return peek() == '\0';
+}</span>
+
+void Tokenizer::collectTokens()
+<span style = "background-color:#dfd">{
+    char currChar = peek();
+    while (currChar != '\0')</span>
+    {
+<span style = "background-color:#dfd">        currChar = peek();</span>
+
+        // Handles unsigned long long numbers
+<span style = "background-color:#dfd">        if (isDigit(currChar))</span>
+        {
+<span style = "background-color:#dfd">            BigInteger number = constructNumber();
+            addToken(TokenType::NUMBER, number);
+            continue;</span>
+<span style = "background-color:#fdd">        }</span>
+
+        // Handles specific language words
+<span style = "background-color:#dfd">        if (isLetter(currChar))</span>
+        {
+<span style = "background-color:#dfd">            std::string word = constructWord();</span>
+
+<span style = "background-color:#dfd">            if (word == "print")        addToken(TokenType::PRINT);
+            else if (word == "read")    addToken(TokenType::READ);
+            else if (word == "and")     addToken(TokenType::AND);
+            else if (word == "or")      addToken(TokenType::OR);
+            else if (word == "if")      addToken(TokenType::IF);
+            else if (word == "then")    addToken(TokenType::THEN);
+            else if (word == "else")    addToken(TokenType::ELSE);
+            else if (word == "while")   addToken(TokenType::WHILE);
+            else if (word == "do")      addToken(TokenType::DO);
+            else if (word == "done")    addToken(TokenType::DONE);
+            else                        addWord(word);</span>
+
+<span style = "background-color:#dfd">            continue;</span>
+<span style = "background-color:#fdd">        }</span>
+
+        // Handles Comments
+<span style = "background-color:#dfd">        if (currChar == '/')</span>
+        {
+<span style = "background-color:#dfd">            if (peekNext() == '/')</span>
+            {
+<span style = "background-color:#dfd">                while (peek() != '\n' &amp;&amp; peek() != '\0')</span>
+                {
+<span style = "background-color:#dfd">                    next();
+                }</span>
+
+<span style = "background-color:#dfd">                continue;</span>
+            }
+
+<span style = "background-color:#dfd">            if (peekNext() == '*')</span>
+            {
+                // Continues while it meets a '*/' or ends the source code
+<span style = "background-color:#dfd">                while ((peek() != '*' || peekNext() != '/') &amp;&amp; peek() != '\0')</span>
+                {
+<span style = "background-color:#dfd">                    if (peek() == '\n')
+                        m_CurrLine++;</span>
+
+<span style = "background-color:#dfd">                    next();
+                }</span>
+
+                // Skips the */
+<span style = "background-color:#dfd">                next();
+                next();</span>
+
+<span style = "background-color:#dfd">                continue;</span>
+            }
+        }
+
+        TokenType type;
+
+<span style = "background-color:#dfd">        switch (currChar)</span>
+        {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\0':
+<span style = "background-color:#dfd">            break;</span>
+
+<span style = "background-color:#dfd">        case '+': addToken(TokenType::PLUS); break;
+        case '-': addToken(TokenType::MINUS); break;
+        case '*': addToken(TokenType::PROD); break;
+        case '/': addToken(TokenType::DIV); break;
+        case '%': addToken(TokenType::MOD); break;</span>
+
+<span style = "background-color:#dfd">        case '[': addToken(TokenType::OPEN_BRACKET); break;
+        case ']': addToken(TokenType::CLOSE_BRACKET); break;
+        case '(': addToken(TokenType::OPEN_PAREN); break;
+        case ')': addToken(TokenType::CLOSE_PAREN); break;</span>
+
+<span style = "background-color:#dfd">        case '?': addToken(TokenType::QUESTION); break;
+        case ':': addToken(TokenType::COLON); break;</span>
+
+        case '=':
+<span style = "background-color:#dfd">            type = peekNext() == '=' ? TokenType::EQUAL_EQUAL : TokenType::EQUALS;
+            if (peekNext() == '=') next();
+            addToken(type);
+            break;</span>
+
+        case '!':
+<span style = "background-color:#dfd">            if (peekNext() == '=') next();
+            type = peek() == '=' ? TokenType::NOT_EQUAL : TokenType::NOT;
+            addToken(type);
+            break;</span>
+
+        case '&gt;':
+<span style = "background-color:#dfd">            if (peekNext() == '=') next();
+            type = peek() == '=' ? TokenType::GREATER_EQUAL : TokenType::GREATER_THAN;
+            addToken(type);
+            break;</span>
+
+        case '&lt;':
+<span style = "background-color:#dfd">            if (peekNext() == '=') next();
+            type = peek() == '=' ? TokenType::LESS_EQUAL : TokenType::LESS_THAN;
+            addToken(type);
+            break;</span>
+
+        case '\n':
+<span style = "background-color:#dfd">            addToken(TokenType::END_OF_LINE);
+            m_CurrLine++;
+            break;</span>
+        default:
+<span style = "background-color:#dfd">            throw SyntaxError("Invalid or unexpected token", m_CurrLine);</span>
+        }
+
+<span style = "background-color:#dfd">        if (currChar != '\0')
+            next();
+    }
+}</span>
+
+void Tokenizer::next()
+<span style = "background-color:#dfd">{
+    m_Iterator++;
+}</span>
+
+char Tokenizer::peek() const
+<span style = "background-color:#dfd">{
+    return m_Src[m_Iterator];
+}</span>
+
+char Tokenizer::peekNext() const
+<span style = "background-color:#dfd">{
+    if (peek() == '\0') return '\0';
+    return m_Src[m_Iterator + 1];
+}</span>
+
+size_t Tokenizer::currPos() const
+<span style = "background-color:#dfd">{
+    return m_Iterator;
+}</span>
+
+char Tokenizer::consume()
+<span style = "background-color:#dfd">{
+    return m_Src[m_Iterator++];
+}</span>
+
+void Tokenizer::addToken(TokenType type, const BigInteger&amp; lit, const std::string&amp; name)
+<span style = "background-color:#dfd">{
+    m_Tokens.emplace_back(type, m_CurrLine, lit, name);
+}</span>
+
+std::string Tokenizer::constructWord()
+<span style = "background-color:#dfd">{
+    size_t startOfWord = currPos();</span>
+
+<span style = "background-color:#dfd">    while (isLetter(peek()) || isDigit(peek()))</span>
+    {
+<span style = "background-color:#dfd">        next();
+    }</span>
+
+<span style = "background-color:#dfd">    std::string::const_iterator begin = m_Src.begin() + startOfWord;
+    std::string::const_iterator end = m_Src.begin() + currPos();</span>
+
+<span style = "background-color:#dfd">    return std::string(begin, end);
+}</span>
+
+BigInteger Tokenizer::constructNumber()
+<span style = "background-color:#dfd">{
+    BigInteger number = 0;</span>
+
+<span style = "background-color:#dfd">    while (isDigit(peek()))</span>
+    {
+<span style = "background-color:#dfd">        uint8_t digit = consume() - '0';
+        number = number * 10 + digit;
+    }</span>
+
+<span style = "background-color:#dfd">    return number;
+}</span>
+
+bool Tokenizer::isDigit(char c) const
+<span style = "background-color:#dfd">{
+    return c &gt;= '0' &amp;&amp; c &lt;= '9';
+}</span>
+
+bool Tokenizer::isLetter(char c) const
+<span style = "background-color:#dfd">{
+    return c &gt;= 'a' &amp;&amp; c &lt;= 'z' || c &gt;= 'A' &amp;&amp; c &lt;= 'Z';
+}</span>
+
+bool Tokenizer::isUppercase(char c) const
+<span style = "background-color:#dfd">{
+    return c &gt;= 'A' &amp;&amp; c &lt;= 'Z';
+}</span>
+
+bool Tokenizer::onlyUppercase(const std::string&amp; word) const
+<span style = "background-color:#dfd">{
+    for (size_t i = 0; i &lt; word.length(); i++)</span>
+    {
+<span style = "background-color:#dfd">        if (!isUppercase(word[i]))
+            return false;
+    }</span>
+
+<span style = "background-color:#dfd">    return true;
+}</span>
+
+bool Tokenizer::onlyLowercase(const std::string&amp; word) const
+<span style = "background-color:#dfd">{
+    for (size_t i = 0; i &lt; word.length(); i++)</span>
+    {
+<span style = "background-color:#dfd">        if (isUppercase(word[i]))
+            return false;
+    }</span>
+
+<span style = "background-color:#dfd">    return true;
+}</span>
+
+void Tokenizer::addWord(const std::string&amp; word)
+<span style = "background-color:#dfd">{
+    if (isUppercase(word.front()))</span>
+    {
+<span style = "background-color:#dfd">        if (onlyUppercase(word))</span>
+        {
+<span style = "background-color:#dfd">            addToken(TokenType::FUNCTION, 0, word);
+            return;</span>
+        }
+
+<span style = "background-color:#dfd">        throw SyntaxError("Invalid function name", m_CurrLine);</span>
+<span style = "background-color:#fdd">    }</span>
+    else
+    {
+<span style = "background-color:#dfd">        if (onlyLowercase(word))</span>
+        {
+<span style = "background-color:#dfd">            addToken(TokenType::VARIABLE, 0, word);
+            return;</span>
+        }
+
+<span style = "background-color:#dfd">        throw SyntaxError("Invalid variable name", m_CurrLine);</span>
+    }
+<span style = "background-color:#dfd">}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

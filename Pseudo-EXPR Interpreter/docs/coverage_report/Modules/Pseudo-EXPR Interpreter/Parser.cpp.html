@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>Parser.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "Parser.h"
+
+#include "Expressions/Unary.h"
+#include "Expressions/Binary.h"
+#include "Expressions/Ternary.h"
+#include "Expressions/Variable.h"
+#include "Expressions/Grouping.h"
+#include "Expressions/Primitive.h"
+#include "Expressions/FunctionCaller.h"
+
+#include "Instructions/Loop.h"
+#include "Instructions/Read.h"
+#include "Instructions/Print.h"
+#include "Instructions/Condition.h"
+#include "Instructions/Assignment.h"
+#include "Instructions/Declaration.h"
+#include "Instructions/Instruction.h"
+
+#include "../Errors/SyntaxError.h"
+#include "../Errors/RunTimeError.h"
+
+Parser::Parser(const std::vector&lt;Token&gt;&amp; tokens, Environment* environmnet)
+<span style = "background-color:#dfd">	: m_Tokens(tokens), m_CurrToken(m_Tokens.begin()), m_Environment(environmnet)
+{
+}</span>
+
+std::vector&lt;Instruction*&gt; Parser::parse()
+<span style = "background-color:#dfd">{
+	std::vector&lt;Instruction*&gt; instructions;</span>
+
+<span style = "background-color:#dfd">	if (m_Tokens.empty())
+		return instructions;</span>
+
+<span style = "background-color:#dfd">	instructions.reserve(m_Tokens.back().getLine());</span>
+
+<span style = "background-color:#dfd">	while (peekType() != TokenType::END_OF_FILE)</span>
+	{
+		try 
+		{
+<span style = "background-color:#dfd">			Instruction* instr = instruction();</span>
+
+<span style = "background-color:#dfd">			if (instr)
+				instructions.push_back(instr);</span>
+		}
+		catch (const SyntaxError&amp;)
+<span style = "background-color:#dfd">		{
+			for (Instruction* instruction : instructions)
+				delete instruction;</span>
+
+<span style = "background-color:#dfd">			eol();
+			throw;</span>
+<span style = "background-color:#fdd">		}</span>
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	return instructions;
+}</span>
+
+bool Parser::isAtEnd() const
+<span style = "background-color:#dfd">{
+	if (m_Tokens.empty())
+		return true;</span>
+
+<span style = "background-color:#dfd">	return peekType() == TokenType::END_OF_FILE;
+}</span>
+
+Instruction* Parser::instruction()
+<span style = "background-color:#dfd">{
+	switch (peekType())</span>
+	{
+<span style = "background-color:#dfd">	case TokenType::VARIABLE:	 return variable();
+	case TokenType::FUNCTION:	 return function();
+	case TokenType::IF:			 return condition();
+	case TokenType::WHILE:		 return loop();
+	case TokenType::PRINT:		 return print();
+	case TokenType::READ:		 return read();</span>
+
+<span style = "background-color:#dfd">	case TokenType::END_OF_LINE: eol(); break;</span>
+		
+<span style = "background-color:#dfd">	case TokenType::ELSE:		 throw SyntaxError("\"else\" can not be used without an \"if\" expression", peekLine());
+	case TokenType::THEN:		 throw SyntaxError("\"then\" must be used after an \"if\" condition", peekLine());
+	case TokenType::DO:		     throw SyntaxError("\"do\" must be used after a loop condition", peekLine());
+	case TokenType::DONE:        throw SyntaxError("\"done\" can not be used witout a while loop", peekLine());
+	default:			         throw SyntaxError("Expected a declaration", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return nullptr;
+}</span>
+
+Instruction* Parser::variable()
+<span style = "background-color:#dfd">{
+	Instruction* assignmentInstr = nullptr;
+	std::string varName = consume().getIdentifier();</span>
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::EQUALS)</span>
+	{
+<span style = "background-color:#dfd">		next();
+		assignmentInstr = new Assignment(varName, expression(), m_Environment);</span>
+
+<span style = "background-color:#dfd">		if (hasMoreInstructions())</span>
+		{
+<span style = "background-color:#dfd">			delete assignmentInstr;
+			throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+		}
+
+<span style = "background-color:#dfd">		return assignmentInstr;</span>
+	}
+			
+<span style = "background-color:#dfd">	throw SyntaxError("Expected variable initalization", peekLine());</span>
+<span style = "background-color:#fdd">}</span>
+
+Instruction* Parser::function()
+<span style = "background-color:#dfd">{
+	Instruction* declInstr = nullptr;
+	Token funcToken = consume();</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::OPEN_BRACKET)
+		throw SyntaxError("Expected a parameter after function declaration", prevLine());</span>
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::CLOSE_BRACKET)
+		throw SyntaxError("0 parameters are not supported", peekLine());</span>
+
+<span style = "background-color:#dfd">	if (peekType() != TokenType::VARIABLE)
+		throw SyntaxError("Fuction parameter expected", peekLine());</span>
+
+<span style = "background-color:#dfd">	Token paramToken = consume();</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::CLOSE_BRACKET)
+		throw SyntaxError("Expected a ']' with single parameter", prevLine());</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::EQUALS)
+		throw SyntaxError("Invalid function declaration", prevLine());</span>
+
+<span style = "background-color:#dfd">	declInstr = new Declaration(funcToken, paramToken, expression(), m_Environment);</span>
+
+<span style = "background-color:#dfd">	if (hasMoreInstructions())</span>
+	{
+<span style = "background-color:#dfd">		delete declInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return declInstr;
+}</span>
+
+Instruction* Parser::condition()
+<span style = "background-color:#dfd">{
+	Instruction* conditionInstr = nullptr;
+	consume();</span>
+
+<span style = "background-color:#dfd">	Expression* condition = logicalOr();</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::THEN)</span>
+	{
+<span style = "background-color:#dfd">		delete condition;
+		throw SyntaxError("Expected \"then\" after condition", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	Instruction* ifTrue = nullptr;
+	try { ifTrue = instruction(); }
+	catch (...) { delete condition; throw; }</span>
+
+<span style = "background-color:#dfd">	if (!ifTrue)</span>
+	{
+<span style = "background-color:#dfd">		delete condition;
+		throw SyntaxError("Expected a declaration", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::ELSE)</span>
+	{
+<span style = "background-color:#dfd">		delete condition;
+		delete ifTrue;
+		throw SyntaxError("Expected \"else\" after declaration", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	Instruction* ifFalse = nullptr;
+	try { ifFalse = instruction(); }
+	catch (...) { delete condition; delete ifTrue; throw; }</span>
+
+<span style = "background-color:#dfd">	if (!ifFalse)</span>
+	{
+<span style = "background-color:#dfd">		delete condition;
+		delete ifTrue;
+		throw SyntaxError("Expected a declaration", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	conditionInstr = new Condition(condition, ifTrue, ifFalse, m_Environment);</span>
+
+<span style = "background-color:#dfd">	if (hasMoreInstructions())</span>
+	{
+<span style = "background-color:#fdd">		delete conditionInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return conditionInstr;
+}</span>
+
+Instruction* Parser::loop()
+<span style = "background-color:#dfd">{
+	Instruction* loopInstr = nullptr;
+	consume();</span>
+
+<span style = "background-color:#dfd">	Expression* condition = logicalOr();</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::DO)</span>
+	{
+<span style = "background-color:#dfd">		delete condition;
+		throw SyntaxError("Expected \"do\" after condition", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	std::vector&lt;Instruction*&gt; instructions;
+	while (peekType() != TokenType::DONE)</span>
+	{
+<span style = "background-color:#dfd">		if (peekType() == TokenType::END_OF_LINE)</span>
+		{
+<span style = "background-color:#dfd">			eol();
+			continue;</span>
+		}
+
+<span style = "background-color:#dfd">		if (peekType() == TokenType::END_OF_FILE)</span>
+		{
+<span style = "background-color:#dfd">			delete condition;
+			for (Instruction* instruction : instructions)
+				delete instruction;</span>
+
+<span style = "background-color:#dfd">			throw SyntaxError("Expected \"done\"", peekLine());</span>
+		}
+
+<span style = "background-color:#dfd">		try { instructions.push_back(instruction()); }</span>
+		catch (...)
+<span style = "background-color:#dfd">		{
+			delete condition;
+			for (Instruction* instruction : instructions)</span>
+<span style = "background-color:#fdd">				delete instruction;</span>
+
+<span style = "background-color:#dfd">			throw;</span>
+<span style = "background-color:#fdd">		}</span>
+<span style = "background-color:#dfd">	}</span>
+
+<span style = "background-color:#dfd">	consume();</span>
+
+<span style = "background-color:#dfd">	loopInstr = new Loop(condition, instructions, m_Environment);</span>
+
+<span style = "background-color:#dfd">	if (hasMoreInstructions())</span>
+	{
+<span style = "background-color:#dfd">		delete loopInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return loopInstr;
+}</span>
+
+Instruction* Parser::print()
+<span style = "background-color:#dfd">{
+	Instruction* printInstr = nullptr;</span>
+
+<span style = "background-color:#dfd">	next();</span>
+
+<span style = "background-color:#dfd">	printInstr = new Print(expression(), m_Environment);</span>
+
+<span style = "background-color:#dfd">	if (hasMoreInstructions())</span>
+	{
+<span style = "background-color:#dfd">		delete printInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return printInstr;
+}</span>
+
+Instruction* Parser::read()
+<span style = "background-color:#dfd">{
+	Instruction* readInstr = nullptr;</span>
+
+<span style = "background-color:#dfd">	next();</span>
+
+<span style = "background-color:#dfd">	if (peekType() != TokenType::VARIABLE)
+		throw SyntaxError("Can not apply value to a non variable token", peekLine());</span>
+
+<span style = "background-color:#dfd">	readInstr = new Read(consume(), m_Environment);</span>
+
+<span style = "background-color:#dfd">	if (hasMoreInstructions())</span>
+	{
+<span style = "background-color:#dfd">		delete readInstr;
+		throw SyntaxError("Expected one instruction per row only", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	return readInstr;
+}</span>
+
+void Parser::eol()
+<span style = "background-color:#dfd">{
+	if (peekType() == TokenType::END_OF_FILE)
+		return;</span>
+
+<span style = "background-color:#dfd">	skipLine();
+}</span>
+
+Expression* Parser::expression()
+<span style = "background-color:#dfd">{
+	return ifElseExpr();
+}</span>
+
+Expression* Parser::ifElseExpr()
+<span style = "background-color:#dfd">{
+	if (peekType() != TokenType::IF)
+		return ternary();</span>
+
+<span style = "background-color:#dfd">	next();</span>
+
+<span style = "background-color:#dfd">	Expression* left = logicalOr();</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::THEN)</span>
+	{
+<span style = "background-color:#dfd">		delete left;
+		throw SyntaxError("Expected \"then\" after condition", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	Expression* ifTrue = nullptr;
+	try { ifTrue = expression(); }
+	catch (...) { delete left; throw; }</span>
+
+<span style = "background-color:#dfd">	if (consumeType() != TokenType::ELSE)</span>
+	{
+<span style = "background-color:#dfd">		delete left;
+		delete ifTrue;
+		throw SyntaxError("Expected \"else\"", prevLine());</span>
+	}
+
+<span style = "background-color:#dfd">	Expression* ifFalse = nullptr;
+	try { ifFalse = expression(); }
+	catch (...) { delete left; delete ifTrue; throw; }</span>
+
+<span style = "background-color:#dfd">	left = new Ternary(left, ifTrue, ifFalse);</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::ternary()
+<span style = "background-color:#dfd">{
+	Expression* left = logicalOr();</span>
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::QUESTION)</span>
+	{
+<span style = "background-color:#dfd">		next();</span>
+		
+<span style = "background-color:#dfd">		Expression* ifTrue = nullptr;
+		try { ifTrue = ternary(); }
+		catch (...) { delete left; throw; }</span>
+
+<span style = "background-color:#dfd">		if (consumeType() != TokenType::COLON)</span>
+		{
+<span style = "background-color:#dfd">			delete left;
+			delete ifTrue;
+			throw SyntaxError("Expected ':'", prevLine());</span>
+		}
+
+<span style = "background-color:#dfd">		Expression* ifFalse = nullptr;
+		try { ifFalse = ternary(); }
+		catch (...) { delete left; delete ifTrue; throw; }</span>
+
+<span style = "background-color:#dfd">		left = new Ternary(left, ifTrue, ifFalse);</span>
+	}
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::logicalOr()
+<span style = "background-color:#dfd">{
+	Expression* left = logicalAnd();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::OR)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;</span>
+		
+<span style = "background-color:#dfd">		try { right = logicalAnd(); }
+		catch (...) { delete left; throw; }</span>
+
+<span style = "background-color:#dfd">		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+ 
+Expression* Parser::logicalAnd()
+<span style = "background-color:#dfd">{
+	Expression* left = equality();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::AND)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;
+		try { right = logicalAnd(); }
+		catch (...) { delete left; throw; }
+		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::equality()
+<span style = "background-color:#dfd">{
+	Expression* left = comparison();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::EQUAL_EQUAL || type == TokenType::NOT_EQUAL)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;
+		try { right = comparison(); }
+		catch (...) { delete left; throw; }
+		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::comparison()
+<span style = "background-color:#dfd">{
+	Expression* left = arithmetic();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+	while (type == TokenType::LESS_THAN || type == TokenType::LESS_EQUAL ||
+<span style = "background-color:#dfd">		type == TokenType::GREATER_THAN || type == TokenType::GREATER_EQUAL)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;
+		try { right = arithmetic(); }
+		catch (...) { delete left; throw; }
+		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::arithmetic()
+<span style = "background-color:#dfd">{
+	Expression* left = factor();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::PLUS || type == TokenType::MINUS)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;
+		try { right = factor(); }
+		catch (...) { delete left; throw; }
+		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::factor()
+<span style = "background-color:#dfd">{
+	Expression* left = unary();</span>
+
+<span style = "background-color:#dfd">	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::PROD || type == TokenType::DIV || type == TokenType::MOD)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* right = nullptr;
+		try { right = unary(); }
+		catch (...) { delete left; throw; }
+		type = peekType();
+		left = new Binary(left, op, right);
+	}</span>
+
+<span style = "background-color:#dfd">	return left;
+}</span>
+
+Expression* Parser::unary()
+<span style = "background-color:#dfd">{
+	TokenType type = peekType();</span>
+
+<span style = "background-color:#dfd">	while (type == TokenType::MINUS || type == TokenType::NOT)</span>
+	{
+<span style = "background-color:#dfd">		Token op = consume();
+		Expression* expr = unary();
+		type = peekType();
+		return new Unary(op, expr);</span>
+<span style = "background-color:#fdd">	}</span>
+
+<span style = "background-color:#dfd">	return primitive();
+}</span>
+
+Expression* Parser::primitive()
+<span style = "background-color:#dfd">{
+	if (peekType() == TokenType::NUMBER)
+		return new Primitive(consume());</span>
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::VARIABLE)
+		return new Variable(consume());</span>
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::FUNCTION)</span>
+	{
+<span style = "background-color:#dfd">		Token name = consume();</span>
+
+<span style = "background-color:#dfd">		if (consumeType() != TokenType::OPEN_BRACKET)
+			throw SyntaxError("Expected a function call", prevLine());</span>
+
+<span style = "background-color:#dfd">		Expression* expr = expression();</span>
+
+<span style = "background-color:#dfd">		if (consumeType() != TokenType::CLOSE_BRACKET)
+			throw SyntaxError("Expected a ']'", prevLine());</span>
+
+<span style = "background-color:#dfd">		return new FunctionCaller(name, expr);</span>
+	}
+
+<span style = "background-color:#dfd">	if (peekType() == TokenType::OPEN_PAREN)</span>
+	{
+<span style = "background-color:#dfd">		next();
+		Expression* expr = expression();</span>
+
+<span style = "background-color:#dfd">		if (consumeType() == TokenType::CLOSE_PAREN)
+			return new Grouping(expr);</span>
+
+<span style = "background-color:#dfd">		throw SyntaxError("Expected a ')'", peekLine());</span>
+	}
+
+<span style = "background-color:#dfd">	throw SyntaxError("Expected an expression", peekLine());
+}</span>
+
+void Parser::next()
+<span style = "background-color:#dfd">{
+	m_CurrToken++;
+}</span>
+
+const Token&amp; Parser::consume()
+<span style = "background-color:#dfd">{
+	const Token&amp; token = *m_CurrToken;
+	m_CurrToken++;
+	return token;
+}</span>
+
+TokenType Parser::consumeType()
+<span style = "background-color:#dfd">{
+	return consume().getType();
+}</span>
+
+void Parser::skipLine()
+<span style = "background-color:#dfd">{
+	while (consume().getType() != TokenType::END_OF_LINE);
+}</span>
+
+const Token&amp; Parser::peek() const
+<span style = "background-color:#dfd">{
+	return *m_CurrToken;
+}</span>
+
+TokenType Parser::peekType() const
+<span style = "background-color:#dfd">{
+	return peek().getType();
+}</span>
+
+uint64_t Parser::peekLine() const
+<span style = "background-color:#dfd">{
+	return peek().getLine();
+}</span>
+
+uint64_t Parser::prevLine() const
+<span style = "background-color:#dfd">{
+	return (*(m_CurrToken - 1)).getLine();
+}</span>
+
+bool Parser::hasMoreInstructions() const
+<span style = "background-color:#dfd">{
+	return peekType() != TokenType::END_OF_LINE &amp;&amp; </span>
+		   peekType() != TokenType::ELSE &amp;&amp; 
+		   peekType() != TokenType::DONE;
+<span style = "background-color:#dfd">}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>

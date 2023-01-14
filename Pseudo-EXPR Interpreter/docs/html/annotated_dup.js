@@ -1,0 +1,28 @@
+var annotated_dup =
+[
+    [ "Assignment", "class_assignment.html", "class_assignment" ],
+    [ "BigInteger", "class_big_integer.html", "class_big_integer" ],
+    [ "Binary", "class_binary.html", "class_binary" ],
+    [ "Condition", "class_condition.html", "class_condition" ],
+    [ "Declaration", "class_declaration.html", "class_declaration" ],
+    [ "Environment", "class_environment.html", "class_environment" ],
+    [ "Error", "class_error.html", "class_error" ],
+    [ "Expression", "class_expression.html", "class_expression" ],
+    [ "FunctionCaller", "class_function_caller.html", "class_function_caller" ],
+    [ "FunctionDeclaration", "class_function_declaration.html", "class_function_declaration" ],
+    [ "Grouping", "class_grouping.html", "class_grouping" ],
+    [ "Instruction", "class_instruction.html", "class_instruction" ],
+    [ "Interpreter", "class_interpreter.html", "class_interpreter" ],
+    [ "Loop", "class_loop.html", "class_loop" ],
+    [ "Parser", "class_parser.html", "class_parser" ],
+    [ "Primitive", "class_primitive.html", "class_primitive" ],
+    [ "Print", "class_print.html", "class_print" ],
+    [ "Read", "class_read.html", "class_read" ],
+    [ "RunTimeError", "class_run_time_error.html", "class_run_time_error" ],
+    [ "SyntaxError", "class_syntax_error.html", "class_syntax_error" ],
+    [ "Ternary", "class_ternary.html", "class_ternary" ],
+    [ "Token", "class_token.html", "class_token" ],
+    [ "Tokenizer", "class_tokenizer.html", "class_tokenizer" ],
+    [ "Unary", "class_unary.html", "class_unary" ],
+    [ "Variable", "class_variable.html", "class_variable" ]
+];
