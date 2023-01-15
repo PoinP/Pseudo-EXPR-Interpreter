@@ -37,7 +37,7 @@ var NAVTREE =
     [ "Language Specifics", "md_pages_languagespecifics.html", [
       [ "Declaring a variable", "md_pages_languagespecifics.html#variable", null ],
       [ "Declaring a function", "md_pages_languagespecifics.html#function", null ],
-      [ "comments", "md_pages_languagespecifics.html#comments", null ],
+      [ "Comments", "md_pages_languagespecifics.html#comments", null ],
       [ "Logical operators", "md_pages_languagespecifics.html#logic", null ],
       [ "Conditional operators", "md_pages_languagespecifics.html#conditionals", null ],
       [ "Comparison operators", "md_pages_languagespecifics.html#comparison", null ],

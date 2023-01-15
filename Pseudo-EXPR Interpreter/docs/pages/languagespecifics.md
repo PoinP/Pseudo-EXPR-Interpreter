@@ -24,7 +24,8 @@ If a parameter matches with a variable in the expressen then the passed argument
 when invoking the function will be used.
 
 > Note: Only single parameter functions are supported. You can not make a function without a parameter or with mutiple parameters
-> Note 2: Functions are only uppercase words.
+
+> Note: Functions are only uppercase words.
 
 @section comments Comments
 There are two kinds of comments in the language.
