@@ -27,12 +27,22 @@ var NAVTREE =
   [ "Pseudo EXPR Interpreter", "index.html", [
     [ "A Pseudo EXPR Interpreter", "index.html", null ],
     [ "Code Coverege", "md_pages_codecoverege.html", [
-      [ "The code coverege of the tests is 95%. You can check the code coverge in the docs folder and then code_coverege", "md_pages_codecoverege.html#autotoc_md0", null ]
+      [ "The code coverege of the tests is 95%. You can check the code coverge in the docs folder and then coverage_report", "md_pages_codecoverege.html#autotoc_md0", null ]
     ] ],
     [ "Examples", "md_pages_examples.html", [
       [ "Decimal to Binary", "md_pages_examples.html#tobinary", null ],
       [ "Sum of the Digits of a Number", "md_pages_examples.html#digitssum", null ],
       [ "Fibonacci Calculation", "md_pages_examples.html#fibbonacci", null ]
+    ] ],
+    [ "Language Specifics", "md_pages_languagespecifics.html", [
+      [ "Declaring a variable", "md_pages_languagespecifics.html#variable", null ],
+      [ "Declaring a function", "md_pages_languagespecifics.html#function", null ],
+      [ "comments", "md_pages_languagespecifics.html#comments", null ],
+      [ "Logical operators", "md_pages_languagespecifics.html#logic", null ],
+      [ "Conditional operators", "md_pages_languagespecifics.html#conditionals", null ],
+      [ "Comparison operators", "md_pages_languagespecifics.html#comparison", null ],
+      [ "I/O operators", "md_pages_languagespecifics.html#io", null ],
+      [ "Loops", "md_pages_languagespecifics.html#loops", null ]
     ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
