@@ -100,6 +100,12 @@ void Tokenizer::collectTokens()
                     next();
                 }
 
+                if (peek() == '\0')
+                {
+                    m_Iterator--;
+                    throw SyntaxError("Expected a *\\", m_CurrLine);
+                }
+
                 // Skips the */
                 next();
                 next();
