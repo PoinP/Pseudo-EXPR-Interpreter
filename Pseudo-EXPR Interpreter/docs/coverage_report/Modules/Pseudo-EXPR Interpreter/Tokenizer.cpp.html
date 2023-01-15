@@ -110,6 +110,12 @@ void Tokenizer::collectTokens()
 
 <span style = "background-color:#dfd">                    next();
                 }</span>
+                
+<span style = "background-color:#dfd">                if (peek() == '\0')</span>
+                {
+<span style = "background-color:#fdd">                    m_Iterator--;
+                    throw SyntaxError("Expected a *\\", m_CurrLine);</span>
+                }
 
                 // Skips the */
 <span style = "background-color:#dfd">                next();

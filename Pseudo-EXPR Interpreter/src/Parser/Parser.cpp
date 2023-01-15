@@ -31,6 +31,7 @@ std::vector<Instruction*> Parser::parse()
 	if (m_Tokens.empty())
 		return instructions;
 
+	// Making a guess on the amount of instructions
 	instructions.reserve(m_Tokens.back().getLine());
 
 	while (peekType() != TokenType::END_OF_FILE)

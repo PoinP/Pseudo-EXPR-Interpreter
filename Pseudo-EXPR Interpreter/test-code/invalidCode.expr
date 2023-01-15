@@ -18,4 +18,3 @@ if 1 > 2 then print 99 // no else is invalid
 while print myVar do
 
 done // it doesn't get detected because while does not get parsed correctly beacuse of an error
-

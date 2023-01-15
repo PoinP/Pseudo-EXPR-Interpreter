@@ -42,6 +42,7 @@ std::vector&lt;Instruction*&gt; Parser::parse()
 <span style = "background-color:#dfd">	if (m_Tokens.empty())
 		return instructions;</span>
 
+	// Making a guess on the amount of instructions
 <span style = "background-color:#dfd">	instructions.reserve(m_Tokens.back().getLine());</span>
 
 <span style = "background-color:#dfd">	while (peekType() != TokenType::END_OF_FILE)</span>
