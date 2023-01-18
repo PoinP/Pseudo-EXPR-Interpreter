@@ -47,19 +47,13 @@ public:
 		Environment functionScope(env);
 
 		if (!functionScope.contains(m_Func.getIdentifier()))
-		{
-			delete m_Arg;
 			throw RunTimeError("Function \"" + m_Func.getIdentifier() + "\" undefined", m_Func.getLine());
-		}
 
 		const Expression* funcExpr = functionScope.get(m_Func.getIdentifier());
 		const FunctionDeclaration* func = dynamic_cast<const FunctionDeclaration*>(funcExpr);
 
 		if (!func)
-		{
-			delete m_Arg;
 			throw RunTimeError("Internal error! Expression not a function!", m_Func.getLine());
-		}
 
 		BigInteger argValue = m_Arg->evaluate(&functionScope);
 		functionScope.setOnSelf(func->getParamName(), new Primitive(argValue));
